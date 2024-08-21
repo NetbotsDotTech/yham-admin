@@ -1,13 +1,18 @@
+import { RouterProvider } from 'react-router-dom';
 
-function App() {
+// project import
+import router from 'routes';
+import ThemeCustomization from 'themes';
+import ScrollTop from 'components/ScrollTop';
 
+// ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //
+
+export default function App() {
   return (
-    <>
-  
-      <h1>Admin Dashboard: Yousuf Hussain Abadi Meusum Website</h1>
-  
-    </>
-  )
+    <ThemeCustomization>
+      <ScrollTop>
+        <RouterProvider router={router} />
+      </ScrollTop>
+    </ThemeCustomization>
+  );
 }
-
-export default App

@@ -37,7 +37,7 @@ const HeroSection = () => {
             </div>
         
         </div> 
-        <div className="container text-end">
+        {/* <div className="container text-end">
             <div className="hero-slider1-controller-wrap">
                 <div className="slides-numbers">
                     <span className="active">01</span> <span className="total"></span>
@@ -69,7 +69,7 @@ const HeroSection = () => {
                 </div>
                 
             </div>
-        </div>
+        </div> */}
     </div>
 
 

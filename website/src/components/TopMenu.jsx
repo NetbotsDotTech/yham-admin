@@ -8,7 +8,6 @@ import "../style.css";
 // import LOGO from "../assets/img/logo.svg";
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import NewsSideBar from "./NewsSideBar"; // Adjust the import path as needed
 
 const TopMenu = () => {

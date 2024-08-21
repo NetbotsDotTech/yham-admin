@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "magnific-popup/dist/magnific-popup.css";
@@ -6,51 +7,50 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "odometer/themes/odometer-theme-default.css";
 import "../style.css";
-// import LOGO from "../assets/img/logo.svg";
 
 const menuItems = [
   {
     title: "Home",
     subMenu: [
-      { name: "Overview of the Museum", href: "overview.html" },
-      { name: "Featured Artifacts or Exhibitions", href: "featured.html" },
+      { name: "Overview of the Museum", path: "/" },
+      { name: "Featured Artifacts or Exhibitions", path: "/artifacts" },
     ],
   },
   {
     title: "Artifacts",
     subMenu: [
-      { name: "Categories", href: "categories.html" },
-      { name: "Search Functionality", href: "search.html" },
+      { name: "Categories", path: "/artifacts" },
+      { name: "Search Functionality", path: "/items" },
     ],
   },
   {
     title: "Exhibitions",
     subMenu: [
-      { name: "Current Exhibitions", href: "current.html" },
-      { name: "Upcoming Exhibitions", href: "upcoming.html" },
+      { name: "Current Exhibitions", path: "/exhibitions/current" },
+      { name: "Upcoming Exhibitions", path: "/exhibitions/upcoming" },
     ],
   },
   {
     title: "About Us",
     subMenu: [
-      { name: "Museum History", href: "history.html" },
-      { name: "Mission & Vision", href: "mission-vision.html" },
-      { name: "Team", href: "team.html" },
+      { name: "Museum History", path: "/about-us" },
+      { name: "Mission & Vision", path: "/about-us#mission-vision" },
+      { name: "Team", path: "/about-us#team" },
     ],
   },
   {
     title: "Visit Us",
     subMenu: [
-      { name: "Location & Hours", href: "location-hours.html" },
-      { name: "Ticket Information", href: "ticket-info.html" },
-      { name: "Directions", href: "directions.html" },
+      { name: "Location & Hours", path: "/visit/location-hours" },
+      { name: "Ticket Information", path: "/visit/ticket-info" },
+      { name: "Directions", path: "/visit/directions" },
     ],
   },
   {
     title: "Contact",
     subMenu: [
-      { name: "Contact Form", href: "contact-form.html" },
-      { name: "Social Media Links", href: "social-media.html" },
+      { name: "Contact Form", path: "/contact-us" },
+      { name: "Social Media Links", path: "/contact-us#social-media" },
     ],
   },
 ];
@@ -58,23 +58,21 @@ const menuItems = [
 const MainMenu = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Handler function to toggle sidebar
   const toggleSidebar = () => {
     setIsSidebarOpen((prevState) => !prevState);
   };
 
   return (
     <>
-      {/* Main Menu Area */}
       <div className="sticky-wrapper">
         <div className="menu-area">
           <div className="container">
             <div className="row align-items-center justify-content-between">
               <div className="col-auto">
                 <div className="header-logo">
-                  <a href="index.html">
+                  <Link to="/">
                     <img src="/img/logo.svg" alt="logo" />
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="col-auto">
@@ -85,12 +83,12 @@ const MainMenu = () => {
                         key={index}
                         className={item.subMenu ? "menu-item-has-children" : ""}
                       >
-                        <a href={item.href || "#"}>{item.title}</a>
+                        <Link to={item.path || "#"}>{item.title}</Link>
                         {item.subMenu && (
                           <ul className="sub-menu">
                             {item.subMenu.map((subItem, subIndex) => (
                               <li key={subIndex}>
-                                <a href={subItem.href}>{subItem.name}</a>
+                                <Link to={subItem.path}>{subItem.name}</Link>
                               </li>
                             ))}
                           </ul>
@@ -111,9 +109,9 @@ const MainMenu = () => {
               </div>
               <div className="col-auto d-none d-xl-block">
                 <div className="header-button">
-                  <a href="contact.html" className="btn d-none d-xl-block">
+                  <Link to="/scan-qr" className="btn d-none d-xl-block">
                     Scan Artifact QR Code
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -121,7 +119,6 @@ const MainMenu = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Sidebar */}
       {isSidebarOpen && (
         <div className="mobile-menu-wrapper">
           <div className="mobile-menu-area text-center">
@@ -129,9 +126,9 @@ const MainMenu = () => {
               <i className="fas fa-times"></i>
             </button>
             <div className="mobile-logo">
-              <a href="index.html">
-                <img src={LOGO} alt="Artvista" />
-              </a>
+              <Link to="/">
+                <img src="/img/logo.svg" alt="Artvista" />
+              </Link>
             </div>
             <div className="mobile-menu">
               <ul>
@@ -140,12 +137,12 @@ const MainMenu = () => {
                     key={index}
                     className={item.subMenu ? "menu-item-has-children" : ""}
                   >
-                    <a href={item.href || "#"}>{item.title}</a>
+                    <Link to={item.path || "#"}>{item.title}</Link>
                     {item.subMenu && (
                       <ul className="sub-menu">
                         {item.subMenu.map((subItem, subIndex) => (
                           <li key={subIndex}>
-                            <a href={subItem.href}>{subItem.name}</a>
+                            <Link to={subItem.path}>{subItem.name}</Link>
                           </li>
                         ))}
                       </ul>

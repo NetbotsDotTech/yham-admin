@@ -1,13 +1,10 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
-
 import dotenv from 'dotenv';
-
 
 dotenv.config();
 
-// Initialize AWS S3 client
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -16,21 +13,17 @@ const s3 = new S3Client({
   },
 });
 
-console.log('S3 Bucket Name in Multer Files:',  process.env.S3_BUCKET_NAME);
-
-// Helper function to format file names with artifact name and timestamp
 const generateFileName = (prefix, artifactName, originalName) => {
   const timestamp = Date.now();
   const formattedName = `${artifactName.replace(/\s+/g, '_').toLowerCase()}_${timestamp}-${originalName}`;
   return `${prefix}/${formattedName}`;
 };
 
-// Multer configuration
-const multerConfig = {
-  images: multerS3({
+
+const uploadImages = multer({
+  storage: multerS3({
     s3,
-    bucket:  process.env.S3_BUCKET_NAME,
-    acl: 'public-read',
+    bucket: process.env.S3_BUCKET_NAME,
     metadata: (req, file, cb) => {
       cb(null, { fieldName: file.fieldname });
     },
@@ -40,10 +33,12 @@ const multerConfig = {
       cb(null, fileName);
     },
   }),
-  audio: multerS3({
+}).array('images', 3); 
+
+const uploadAudio = multer({
+  storage: multerS3({
     s3,
-    bucket:  process.env.S3_BUCKET_NAME,
-    acl: 'public-read',
+    bucket: process.env.S3_BUCKET_NAME,
     metadata: (req, file, cb) => {
       cb(null, { fieldName: file.fieldname });
     },
@@ -53,11 +48,27 @@ const multerConfig = {
       cb(null, fileName);
     },
   }),
-};
+}).single('audio'); 
 
-// Multer upload middleware
 const upload = multer({
-  storage: multer.memoryStorage(),
-});
+  storage: multerS3({
+    s3,
+    bucket: process.env.S3_BUCKET_NAME,
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: (req, file, cb) => {
+      const artifactName = req.body.name || 'artifact';
+      const prefix = file.fieldname === 'images' ? 'images' : 'audio';
+      const fileName = generateFileName(prefix, artifactName, file.originalname);
+      cb(null, fileName);
+    },
+  }),
+}).fields([
+  { name: 'audio', maxCount: 1 },
 
-export { multerConfig, upload };
+  { name: 'images', maxCount: 3 }
+]);
+
+
+export { uploadImages, uploadAudio , upload};

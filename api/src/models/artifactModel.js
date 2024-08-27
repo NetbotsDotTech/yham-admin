@@ -16,9 +16,11 @@ const artifactSchema = new mongoose.Schema({
   age: { type: String, required: true },
   shelfNo: { type: String, required: true },
   hallNo: { type: String, required: true },
-  audioUrl: { type: String, required: true },
-  images: [{ type: String, required: true }],
-  qrCodeUrl: { type: String, required: true },
+  audio: { type: String,  },
+  images: [{ type: String,  }],
+  qrCode: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 const Artifact = mongoose.model('Artifact', artifactSchema);

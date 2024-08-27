@@ -16,7 +16,6 @@ const s3 = new S3Client({
   },
 });
 
-console.log('S3 Bucket Name in utils:', process.env.S3_BUCKET_NAME);
 
 const randomBytes = promisify(crypto.randomBytes);
 
@@ -27,7 +26,7 @@ export const uploadFileToS3 = async (file, artifactName, folder) => {
     Key: fileName,
     Body: file.buffer,
     ContentType: file.mimetype,
-    ACL: 'public-read',
+    // ACL: 'public-read',
   };
   const command = new PutObjectCommand(params);
   await s3.send(command);
@@ -43,7 +42,7 @@ export const generateQRCode = async (data) => {
     Key: fileName,
     Body: buffer,
     ContentType: 'image/png',
-    ACL: 'public-read',
+    // ACL: 'public-read',
   };
   const command = new PutObjectCommand(params);
   await s3.send(command);

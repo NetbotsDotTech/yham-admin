@@ -4,38 +4,70 @@ import { uploadFileToS3, generateQRCode } from '../utils/s3Utils.js';
 
 // Create Artifact
 export const createArtifact = asyncHandler(async (req, res) => {
-  const { name, itemNo, serialNo, description, madeOf, particulars, age, shelfNo, hallNo } = req.body;
+  try {
+    const { name, itemNo, serialNo, description, madeOf, particulars, age, shelfNo, hallNo } = req.body;
 
-  const artifactExists = await Artifact.findOne({ itemNo });
-  if (artifactExists) {
-    res.status(400);
-    throw new Error('Artifact with this item number already exists');
+    // Check if an artifact with the same item number already exists
+    const artifactExists = await Artifact.findOne({ itemNo });
+    if (artifactExists) {
+      return res.status(400).json({
+        success: false,
+        message: 'Artifact with this item number already exists',
+      });
+    }
+
+    // Generate QR code
+    const qrCodeUrl = await generateQRCode({ name, itemNo, serialNo, description, });
+    console.log("Step 1: QR Code generated", qrCodeUrl);
+
+    // Get image URLs from the files uploaded via the uploadImages middleware
+    const imageUrls = req.files['images'] ? req.files['images'].map(file => file.location) : [];
+    console.log("Step 2: Images uploaded to S3", imageUrls);
+
+    // Get audio URL from the file uploaded via the uploadAudio middleware
+    let audioUrl = '';
+    if (req.files['audio'] && req.files['audio'][0] && req.files['audio'][0].location) {
+      audioUrl = req.files['audio'][0].location;
+      console.log("Step 3: Audio uploaded to S3", audioUrl);
+    }
+
+    // Create the artifact document
+    const artifact = new Artifact({
+      name,
+      itemNo,
+      serialNo,
+      description,
+      madeOf,
+      particulars,
+      age,
+      shelfNo,
+      hallNo,
+      audio: audioUrl,
+      images: imageUrls,
+      qrCode: qrCodeUrl,
+    });
+
+    // Save the artifact to the database
+    const createdArtifact = await artifact.save();
+    console.log("Step 4: Artifact saved to DB", createdArtifact);
+
+    // Respond with the created artifact
+    res.status(201).json({
+      success: true,
+      message: 'Artifact created successfully',
+      data: createdArtifact,
+    });
+  } catch (error) {
+    console.error('Error creating artifact:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while creating the artifact',
+      error: error.message,
+    });
   }
-
-  const qrCodeUrl = await generateQRCode({ itemNo, name, description });
-
-  const imageUrls = await Promise.all(req.files.images.map(async (file) => {
-    return await uploadFileToS3(file, name, 'images');
-  }));
-
-  const artifact = new Artifact({
-    name,
-    itemNo,
-    serialNo,
-    description,
-    madeOf,
-    particulars,
-    age,
-    shelfNo,
-    hallNo,
-    audioUrl: req.body.audioUrl,
-    images: imageUrls,
-    qrCodeUrl,
-  });
-
-  const createdArtifact = await artifact.save();
-  res.status(201).json(createdArtifact);
 });
+
+
 
 // Get all Artifacts
 export const getArtifacts = asyncHandler(async (req, res) => {

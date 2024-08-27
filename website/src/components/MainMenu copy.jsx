@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "magnific-popup/dist/magnific-popup.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "odometer/themes/odometer-theme-default.css";
-import "../style.css"; // Import the updated CSS
-import "../custom.css"; // Import the responsive CSS
+import "../style.css";
 
 const menuItems = [
   {
@@ -61,13 +59,7 @@ const MainMenu = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
-
-    console.log("toggleSidebar triggered");
-    setIsSidebarOpen(prevState => !prevState);
-  };
-
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
+    setIsSidebarOpen((prevState) => !prevState);
   };
 
   return (
@@ -96,7 +88,7 @@ const MainMenu = () => {
                           <ul className="sub-menu">
                             {item.subMenu.map((subItem, subIndex) => (
                               <li key={subIndex}>
-                                <Link to={subItem.path} onClick={closeSidebar}>{subItem.name}</Link>
+                                <Link to={subItem.path}>{subItem.name}</Link>
                               </li>
                             ))}
                           </ul>
@@ -108,10 +100,10 @@ const MainMenu = () => {
                 <div className="navbar-right d-inline-flex d-lg-none">
                   <button
                     type="button"
-                    className="menu-toggle-icon-btn"
+                    className="menu-toggle icon-btn"
                     onClick={toggleSidebar}
                   >
-                    <FaBars />
+                    <i className="fas fa-bars"></i>
                   </button>
                 </div>
               </div>
@@ -127,44 +119,41 @@ const MainMenu = () => {
         </div>
       </div>
 
-      <div className={`mobile-menu-wrapper ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="mobile-menu-area">
-          <button className="close-menu-btn" onClick={toggleSidebar}>
-            <FaTimes />
-          </button>
-          <div className="mobile-logo">
-            <Link to="/">
-              <img src="/img/logo.svg" alt="Artvista" />
-            </Link>
-          </div>
-          <div className="mobile-menu">
-            <ul className="mobile-menu-ul">
-              {menuItems.map((item, index) => (
-                <li
-                  key={index}
-                  className={item.subMenu ? "menu-item-has-children" : ""}
-                  style={{ marginBottom: "1rem" }}
-                >
-                  <Link to={item.path || "#"} onClick={closeSidebar} className="mobile-menu-link">
-                    {item.title}
-                  </Link>
-                  {item.subMenu && (
-                    <ul className="sub-menu">
-                      {item.subMenu.map((subItem, subIndex) => (
-                        <li key={subIndex}>
-                          <Link to={subItem.path} onClick={closeSidebar} className="mobile-menu-link">
-                            {subItem.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
+      {isSidebarOpen && (
+        <div className="mobile-menu-wrapper">
+          <div className="mobile-menu-area text-center">
+            <button className="menu-toggle" onClick={toggleSidebar}>
+              <i className="fas fa-times"></i>
+            </button>
+            <div className="mobile-logo">
+              <Link to="/">
+                <img src="/img/logo.svg" alt="Artvista" />
+              </Link>
+            </div>
+            <div className="mobile-menu">
+              <ul>
+                {menuItems.map((item, index) => (
+                  <li
+                    key={index}
+                    className={item.subMenu ? "menu-item-has-children" : ""}
+                  >
+                    <Link to={item.path || "#"}>{item.title}</Link>
+                    {item.subMenu && (
+                      <ul className="sub-menu">
+                        {item.subMenu.map((subItem, subIndex) => (
+                          <li key={subIndex}>
+                            <Link to={subItem.path}>{subItem.name}</Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

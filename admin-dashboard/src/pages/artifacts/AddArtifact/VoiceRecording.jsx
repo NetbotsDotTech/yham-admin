@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/media-has-caption */
-/* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react';
 import { Button, Grid, Typography, Box } from '@mui/material';
 import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
@@ -23,15 +21,11 @@ const VoiceRecording = ({ audio, onAudioStop, onAudioSave }) => {
 
   const handleSave = () => {
     if (recorderControls.recordedBlob) {
-      onAudioSave(recorderControls.recordedBlob);
+      // Create a new blob with the desired file type (AAC)
+      const aacBlob = new Blob([recorderControls.recordedBlob], { type: 'audio/aac' });
+      onAudioSave(aacBlob);
     }
   };
-
-  useEffect(() => {
-    if (recorderControls.recordedBlob) {
-      // Do something with the recorded blob if needed
-    }
-  }, [recorderControls.recordedBlob]);
 
   return (
     <Box p={2}>

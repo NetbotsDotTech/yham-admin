@@ -1,34 +1,12 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable prettier/prettier */
+import React, { useEffect, useMemo, useState } from 'react';
+import axios from 'axios';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { Box, IconButton, Menu, MenuItem, Button } from '@mui/material';
 import { Visibility as VisibilityIcon, Edit as EditIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import ViewArtifactModal from './ViewArtifact';
-import AddArtifact from './AddArtifact/AddArtifact'; // Ensure this import is correct
-import EditArtifact from './Edit/EditArtifact'; // Import the new component
-
-// Sample data for the table
-const data = [
-  {
-    name: 'Ancient Pottery Vase',
-    itemNo: 'GB-001',
-    serialNo: 'SN-001',
-    description: 'An ancient pottery vase from the 2nd century, discovered in the Hunza Valley.',
-    madeOf: 'Clay',
-    particulars: {
-      width: 15,
-      depth: 20,
-      circumference: 50,
-      diameters: 25,
-      weight: 2.5
-    },
-    age: '2000 years',
-    shelfNo: 'S-01',
-    hallNo: 'H-01',
-    audio: '../../../public/audio.m4a',
-    images: ['../../../public/img1.png', '../../../public/img2.png', '../../../public/img3.png'],
-    qrCode: '../../../public/qrcode.png'
-  }
-];
+import AddArtifact from './AddArtifact/AddArtifact';
+import EditArtifact from './Edit/EditArtifact';
 
 const Example = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -36,6 +14,25 @@ const Example = () => {
   const [modalOpen, setModalOpen] = useState({ type: '', open: false });
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [data, setData] = useState([]); // State to store fetched data
+  const [loading, setLoading] = useState(true); // State to handle loading state
+
+  // Fetch data from the backend API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/artifacts');
+        console.log("response",response.data); // Assuming response.data is an array of artifacts
+        setData(response.data); // Assuming response.data is an array of artifacts
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Handle menu open and close
   const handleClick = (event, row) => {
@@ -55,7 +52,6 @@ const Example = () => {
         header: 'Actions',
         enableEditing: false,
         size: 100,
-        // Custom cell renderer for actions column
         Cell: ({ row }) => (
           <IconButton onClick={(event) => handleClick(event, row.original)}>
             <MoreVertIcon />
@@ -103,10 +99,12 @@ const Example = () => {
     ],
     []
   );
+
   // Define table instance
   const table = useMaterialReactTable({
     columns,
-    data // Ensure data is memoized or stable
+    data, // Use the fetched data
+    state: { isLoading: loading } // Display loading indicator while fetching data
   });
 
   // Handle view, edit, delete actions
@@ -138,9 +136,7 @@ const Example = () => {
   };
 
   const handleOpenAddModal = () => {
-    console.log('handleOpenAddModal Function Triggered');
     setAddModalOpen(true);
-    console.log(addModalOpen);
   };
 
   const handleCloseAddModal = () => {

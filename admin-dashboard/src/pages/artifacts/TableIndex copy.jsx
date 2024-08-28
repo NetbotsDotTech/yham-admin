@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable prettier/prettier */
+import { useMemo, useState } from 'react';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import { Box, IconButton, Menu, MenuItem, Button } from '@mui/material';
 import { Visibility as VisibilityIcon, Edit as EditIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import ViewArtifactModal from './ViewArtifact';
 import AddArtifact from './AddArtifact/AddArtifact'; // Ensure this import is correct
-import EditArtifact from './Edit/EditArtifact'; // Import the new component
+import EditArtifact from './Edit/EditArtifact'; // Ensure this import is correct
 
 // Sample data for the table
 const data = [
@@ -103,6 +104,7 @@ const Example = () => {
     ],
     []
   );
+
   // Define table instance
   const table = useMaterialReactTable({
     columns,
@@ -116,11 +118,7 @@ const Example = () => {
   };
 
   const handleEdit = () => {
-    if (currentRow) {
-      setEditModalOpen(true);
-    } else {
-      console.error('No row selected for editing');
-    }
+    // Handle edit action
     handleClose();
   };
 
@@ -133,25 +131,15 @@ const Example = () => {
     setModalOpen({ type: '', open: false });
   };
 
-  const handleCloseEditModal = () => {
-    setEditModalOpen(false);
-  };
-
+  // Handle opening and closing the AddArtifactModal
   const handleOpenAddModal = () => {
-    console.log('handleOpenAddModal Function Triggered');
+    console.log('handleOpenAddModal Function Trgiggered');
     setAddModalOpen(true);
     console.log(addModalOpen);
   };
 
   const handleCloseAddModal = () => {
     setAddModalOpen(false);
-  };
-
-  // Save edited artifact
-  const handleSaveEdit = (updatedArtifact) => {
-    console.log('Saving edited artifact:', updatedArtifact);
-    // Here you should update your data source
-    handleCloseEditModal();
   };
 
   return (
@@ -164,7 +152,6 @@ const Example = () => {
       </Box>
 
       <MaterialReactTable table={table} />
-
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         <MenuItem onClick={handleView}>
           <VisibilityIcon sx={{ marginRight: 1 }} />
@@ -185,9 +172,9 @@ const Example = () => {
 
       {/* AddArtifactModal to add a new artifact */}
       <AddArtifact open={addModalOpen} handleClose={handleCloseAddModal} />
+            {/* EditArtifactModal to edit the selected artifact */}
+            <EditArtifact open={editModalOpen} handleClose={handleCloseEditModal} artifact={currentRow} onSave={handleSaveEdit} />
 
-      {/* EditArtifactModal to edit the selected artifact */}
-      <EditArtifact open={editModalOpen} handleClose={handleCloseEditModal} artifact={currentRow} onSave={handleSaveEdit} />
     </>
   );
 };

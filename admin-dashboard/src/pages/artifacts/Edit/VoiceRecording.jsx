@@ -76,20 +76,9 @@ const VoiceRecording = ({ audio, onAudioStop, onAudioSave }) => {
         {/* Recorded Audio Playback */}
         {recorderControls.recordedBlob && (
           <Grid item xs={12}>
-            <Typography variant="body1">
-              Duration: {recorderControls.formattedDuration}
-            </Typography>
-            <audio
-              controls
-              src={URL.createObjectURL(recorderControls.recordedBlob)}
-              style={{ width: '100%', marginBottom: '10px' }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              sx={{ mt: 2 }}
-            >
+            <Typography variant="body1">Duration: {recorderControls.formattedDuration}</Typography>
+            <audio controls src={URL.createObjectURL(recorderControls.recordedBlob)} style={{ width: '100%', marginBottom: '10px' }} />
+            <Button variant="contained" color="primary" onClick={handleSave} sx={{ mt: 2 }}>
               Save
             </Button>
           </Grid>

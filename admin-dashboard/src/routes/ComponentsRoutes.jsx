@@ -5,29 +5,37 @@ import MainLayout from 'layout/Dashboard/index';
 import Loadable from 'components/Loadable';
 
 // render - data display components
-const Typography = Loadable(lazy(() => import('pages/components-overview/typography')));
-
-// render - utils components page
-const Color = Loadable(lazy(() => import('pages/components-overview/color')));
-const Shadow = Loadable(lazy(() => import('pages/components-overview/shadows')));
+const Dashboard = Loadable(lazy(() => import('pages/dashboard/default')));
+const Artifacts = Loadable(lazy(() => import('pages/artifacts/TableIndex')));
+const StockRegistering = Loadable(lazy(() => import('pages/stocks/ViewStock')));
+const Users = Loadable(lazy(() => import('pages/users/AddUser')));
+const Settings = Loadable(lazy(() => import('pages/setting/Setting')));
 
 // ==============================|| COMPONENTS ROUTES ||============================== //
 
 const ComponentsRoutes = {
-  path: 'components-overview',
+  path: '/',
   element: <MainLayout />,
   children: [
     {
-      path: 'typography',
-      element: <Typography />
+      path: 'dashboard',
+      element: <Dashboard />
     },
     {
-      path: 'color',
-      element: <Color />
+      path: 'artifacts',
+      element: <Artifacts />
     },
     {
-      path: 'shadows',
-      element: <Shadow />
+      path: 'stock-registering',
+      element: <StockRegistering />
+    },
+    {
+      path: 'users',
+      element: <Users />
+    },
+    {
+      path: 'settings',
+      element: <Settings />
     }
   ]
 };

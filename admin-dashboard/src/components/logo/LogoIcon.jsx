@@ -50,7 +50,7 @@ export default function LogoIcon() {
     //   />
     // </svg>
     <>
-          <img src={LOGO} alt='Main Logo'/>
+      <img src={LOGO} alt="Main Logo" />
     </>
   );
 }

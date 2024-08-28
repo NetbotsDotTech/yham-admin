@@ -139,10 +139,8 @@ export default function ProfilePage() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} />
                           <Stack>
-                            <Typography variant="subtitle1">John Doe</Typography>
-                            <Typography variant="body2" color="secondary">
-                              UI/UX Designer
-                            </Typography>
+                            <Typography variant="subtitle1">Admin</Typography>
+                            <Typography variant="body2" color="secondary"></Typography>
                           </Stack>
                         </Stack>
                       </Grid>

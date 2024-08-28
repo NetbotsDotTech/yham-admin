@@ -51,7 +51,7 @@ export default function LogoMain() {
         />
       </svg> */}
 
-      <img src={LOGO} alt='Main Logo'/>
+      <img src={LOGO} alt="Main Logo" />
     </>
   );
 }

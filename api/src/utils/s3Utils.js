@@ -34,6 +34,15 @@ export const uploadFileToS3 = async (file, artifactName, folder) => {
 };
 
 export const generateQRCode = async (data) => {
+  const formattedData = `
+  Artifact Name: ${data.name}
+  Item No: ${data.itemNo}
+  Serial No: ${data.serialNo}
+  Description: ${data.description}
+  
+  For a more detailed version, please visit our website:
+  https://yousufhussainabadimuseum.pk/ and scan the QR code on the website.
+  `;
   const qrCodeImage = await QRCode.toDataURL(JSON.stringify(data));
   const buffer = Buffer.from(qrCodeImage.split(',')[1], 'base64');
   const fileName = `qrcodes/${Date.now()}.png`;

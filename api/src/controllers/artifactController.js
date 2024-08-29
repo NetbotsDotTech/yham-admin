@@ -4,6 +4,7 @@ import { uploadFileToS3, generateQRCode } from '../utils/s3Utils.js';
 
 // Create Artifact
 export const createArtifact = asyncHandler(async (req, res) => {
+  console.log("Create Artifact Api Trigerred")
   try {
     const { name, itemNo, serialNo, description, madeOf, particulars, age, shelfNo, hallNo } = req.body;
 

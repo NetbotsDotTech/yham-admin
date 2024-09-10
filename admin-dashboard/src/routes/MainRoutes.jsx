@@ -7,9 +7,11 @@ import Loadable from 'components/Loadable';
 // render - data display components
 const Dashboard = Loadable(lazy(() => import('pages/dashboard/default')));
 const Artifacts = Loadable(lazy(() => import('pages/artifacts/TableIndex.jsx')));
-const StockRegistering = Loadable(lazy(() => import('pages/stocks/ViewStock')));
+const StockRegistering = Loadable(lazy(() => import('pages/stocks/ViewAllStock')));
 const Users = Loadable(lazy(() => import('pages/users/AddUser')));
 const Settings = Loadable(lazy(() => import('pages/setting/Setting')));
+const QrCodes = Loadable(lazy(() => import('pages/qr-codes/QrCodes')));
+
 
 // ==============================|| COMPONENTS ROUTES ||============================== //
 
@@ -32,6 +34,10 @@ const ComponentsRoutes = {
     {
       path: 'users',
       element: <Users />
+    },
+    {
+      path: 'qr-codes',
+      element: <QrCodes />
     },
     {
       path: 'settings',

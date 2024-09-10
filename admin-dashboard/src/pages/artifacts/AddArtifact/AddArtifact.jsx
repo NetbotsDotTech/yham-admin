@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { Grid, TextField, Button, Typography, IconButton, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -82,44 +83,50 @@ export default function AddArtifact({ open, handleClose }) {
           formDataToSend.append(`particulars[${particularKey}]`, formData.particulars[particularKey]);
         });
       } else if (key === 'images') {
-        formData.images.forEach((image, index) => {
+        formData.images.forEach((image) => {
           formDataToSend.append('images', image);
         });
-      } else if (key === 'audio') {
-        if (formData.audio) formDataToSend.append('audio', formData.audio);
+      } else if (key === 'audio' && formData.audio) {
+        // Append the audio blob with a proper file name and type
+        formDataToSend.append('audio', formData.audio, `recording-${Date.now()}.wav`);
       } else {
         formDataToSend.append(key, formData[key]);
       }
     });
 
     try {
-      await axios.post('http://localhost:5000/api/artifacts', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      toast.success('Artifact added successfully!');
+      await axios
+        .post('http://localhost:5000/api/artifacts', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+        .then(() => {
+          toast.success('Artifact added successfully!');
+          setFormData({
+            name: '',
+            itemNo: '',
+            serialNo: '',
+            description: '',
+            madeOf: '',
+            age: '',
+            shelfNo: '',
+            hallNo: '',
+            particulars: {
+              width: '',
+              depth: '',
+              circumference: '',
+              diameters: '',
+              weight: ''
+            },
+            images: [],
+            audio: null
+          });
+          handleClose();
+        });
+      
       // Clear form data
-      setFormData({
-        name: '',
-        itemNo: '',
-        serialNo: '',
-        description: '',
-        madeOf: '',
-        age: '',
-        shelfNo: '',
-        hallNo: '',
-        particulars: {
-          width: '',
-          depth: '',
-          circumference: '',
-          diameters: '',
-          weight: ''
-        },
-        images: [],
-        audio: null
-      });
-      handleClose();
+  
     } catch (error) {
       toast.error('Failed to add artifact. Please try again.');
     }

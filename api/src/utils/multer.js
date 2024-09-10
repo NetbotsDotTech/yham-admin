@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import dotenv from 'dotenv';
@@ -71,4 +71,22 @@ const upload = multer({
 ]);
 
 
-export { uploadImages, uploadAudio , upload};
+ const uploadPdf = async (pdfBuffer, fileName) => {
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: `qrCodes/${fileName}`,
+    Body: pdfBuffer,
+    ContentType: 'application/pdf',
+   
+  };
+
+  try {
+    await s3.send(new PutObjectCommand(params));
+    return `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
+  } catch (error) {
+    console.error('Error uploading PDF:', error);
+    throw new Error('Failed to upload PDF');
+  }
+};
+
+export { uploadImages, uploadAudio , upload, uploadPdf};

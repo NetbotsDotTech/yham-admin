@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
@@ -18,20 +17,21 @@ const Example = () => {
   const [loading, setLoading] = useState(true); // State to handle loading state
 
   // Fetch data from the backend API
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/artifacts');
-        console.log("response",response.data); // Assuming response.data is an array of artifacts
-        setData(response.data); // Assuming response.data is an array of artifacts
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('http://localhost:5000/api/artifacts');
+      console.log("response",response.data); // Assuming response.data is an array of artifacts
+      setData(response.data.data); // Extract the actual data array
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    fetchData(); // Fetch data on component mount
   }, []);
 
   // Handle menu open and close
@@ -122,9 +122,16 @@ const Example = () => {
     handleClose();
   };
 
-  const handleDelete = () => {
-    alert('Deleting:', currentRow);
-    handleClose();
+  const handleDelete = async () => {
+    if (currentRow && currentRow.id) {
+      try {
+        await axios.delete(`http://localhost:5000/api/artifacts/${currentRow.id}`);
+        fetchData(); // Refresh the data after deletion
+        handleClose();
+      } catch (error) {
+        console.error('Error deleting artifact:', error);
+      }
+    }
   };
 
   const handleCloseModal = () => {
@@ -144,10 +151,14 @@ const Example = () => {
   };
 
   // Save edited artifact
-  const handleSaveEdit = (updatedArtifact) => {
-    console.log('Saving edited artifact:', updatedArtifact);
-    // Here you should update your data source
-    handleCloseEditModal();
+  const handleSaveEdit = async (updatedArtifact) => {
+    try {
+      await axios.put(`http://localhost:5000/api/artifacts/${updatedArtifact.id}`, updatedArtifact);
+      fetchData(); // Refresh the data after editing
+      handleCloseEditModal();
+    } catch (error) {
+      console.error('Error saving edited artifact:', error);
+    }
   };
 
   return (
@@ -180,7 +191,7 @@ const Example = () => {
       <ViewArtifactModal open={modalOpen.open && modalOpen.type === 'view'} handleClose={handleCloseModal} artifact={currentRow} />
 
       {/* AddArtifactModal to add a new artifact */}
-      <AddArtifact open={addModalOpen} handleClose={handleCloseAddModal} />
+      <AddArtifact open={addModalOpen} handleClose={handleCloseAddModal} onSave={fetchData} />
 
       {/* EditArtifactModal to edit the selected artifact */}
       <EditArtifact open={editModalOpen} handleClose={handleCloseEditModal} artifact={currentRow} onSave={handleSaveEdit} />

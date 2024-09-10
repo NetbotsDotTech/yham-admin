@@ -1,5 +1,6 @@
+/* eslint-disable prettier/prettier */
 // type
-import { Home3, HomeTrendUp, Box, Archive, User, Setting2 } from 'iconsax-react';
+import { Home3, HomeTrendUp, Box, Archive, User,ScanBarcode,  Setting2 } from 'iconsax-react';
 
 // icons
 const icons = {
@@ -8,7 +9,8 @@ const icons = {
   artifacts: Box,
   stockRegistering: Archive,
   users: User,
-  settings: Setting2
+  settings: Setting2,
+  ScanBarcode: ScanBarcode
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -49,6 +51,14 @@ const UpdatedMenu = {
       type: 'item',
       url: '/users',
       icon: icons.users,
+      breadcrumbs: false
+    },
+    {
+      id: 'qr-codes',
+      title: 'Qr Codes',
+      type: 'item',
+      url: '/qr-codes',
+      icon: icons.ScanBarcode,
       breadcrumbs: false
     },
     {

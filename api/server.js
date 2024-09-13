@@ -1,8 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import artifactRoutes from './src/routes/artifactRoutes.js';
-import { generateQrCodePdf } from './src/controllers/qrCodesController.js';
-import {demoEndpoint } from './src/controllers/qrCodesController.js';
+import qrRoutes from './src/routes/qrCodes.js';
 import { errorHandler } from './src/middlewares/errorHandler.js';
 import connectDB  from './db.js';
 import cors from 'cors'; 
@@ -23,8 +22,8 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 app.use(express.json());
 app.use('/api/artifacts', artifactRoutes);
-app.use('/api/qr-code', generateQrCodePdf);
-app.use('/api/test', demoEndpoint);
+app.use('/api/qr-codes', qrRoutes);
+
 app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

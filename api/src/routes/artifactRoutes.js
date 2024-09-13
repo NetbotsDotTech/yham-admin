@@ -6,6 +6,7 @@ import {
   updateArtifact,
   deleteArtifact
 } from '../controllers/artifactController.js';
+import { generateQrCodePdf } from '../controllers/qrCodesController.js';
 import { upload } from '../utils/multer.js';
 
 const router = express.Router();
@@ -16,6 +17,9 @@ router.get('/', getArtifacts);
 router.get('/:id', getArtifactById);
 router.put('/:id', updateArtifact);
 router.delete('/:id', deleteArtifact);
+
+
+router.get('/all-qrcodes', generateQrCodePdf);
 
 
 export default router;

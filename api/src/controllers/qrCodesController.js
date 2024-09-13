@@ -1,19 +1,27 @@
 import { PDFDocument, rgb } from 'pdf-lib';
 import QRCode from 'qrcode';
 import asyncHandler from 'express-async-handler';
-import { uploadPdf } from '../utils/multer.js'; // Utility function to upload PDF
-import Artifact from '../models/artifactModel.js';
-import QRCodePdf from '../models/qrCodePdf.js'; // New Model
+import Artifact from '../models/artifactModel.js'; // Assuming you still need this to fetch artifacts
+import stream from 'stream';
 
 export const generateQrCodePdf = asyncHandler(async (req, res) => {
   try {
-    // Fetch all artifacts
-    const artifacts = await Artifact.find({}, 'qrCode itemNo hallNo shelfNo');
+    console.log('Step 1: Finding all artifacts');
+
+    const { shelfNo, hallNo, itemNo } = req.query;
+
+    let query = {};
+    if (shelfNo) query.shelfNo = shelfNo;
+    if (hallNo) query.hallNo = hallNo;
+    if (itemNo) query.itemNo = itemNo;
+
+    const artifacts = await Artifact.find(query);
 
     if (artifacts.length === 0) {
       return res.status(404).send('No artifacts found.');
     }
 
+    console.log('Step 2: Generating QR Codes and streaming PDF');
     console.log('Generating QR Code PDF for', artifacts.length, 'artifacts');
 
     // Create a new PDF document
@@ -61,49 +69,27 @@ export const generateQrCodePdf = asyncHandler(async (req, res) => {
       x += qrCodeSize + spacing;
     }
 
-    const pdfBytes = await pdfDoc.save();
-    const pdfBuffer = Buffer.from(pdfBytes);
-console.log('PDF generated successfully');
-    // Determine the type of record for naming
-    const firstArtifact = artifacts[0];
-    const recordType = firstArtifact.shelfNo
-      ? `Shelf_${firstArtifact.shelfNo}`
-      : firstArtifact.hallNo
-      ? `Hall_${firstArtifact.hallNo}`
-      : firstArtifact.itemNo
-      ? `Item_${firstArtifact.itemNo}`
-      : 'AllRecords';
+    // Create a PassThrough stream to write the PDF
+    const pdfStream = new stream.PassThrough();
 
-    const artifactName = `QRCodeCollection_${recordType}_${Date.now()}.pdf`;
-    console.log('PDF name:', artifactName);
-    const pdfUrl = await uploadPdf(pdfBuffer, artifactName);
-console.log('PDF uploaded successfully');
-    // Save PDF details in the new QRCodePdf model
-    for (const artifact of artifacts) {
-      const qrCodePdfRecord = new QRCodePdf({
-        itemNo: artifact.itemNo || '',
-        hallNo: artifact.hallNo || '',
-        shelfNo: artifact.shelfNo || '',
-        qrCodePdf: pdfUrl,
-      });
-      
-      await qrCodePdfRecord.save();
-    }
-    console.log('QR Code PDF details saved successfully');
-
-    res.setHeader('Content-Type', 'application/json');
+    // Set headers for PDF download
+    const artifactName = `QRCodeCollection_AllRecords_${Date.now()}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${artifactName}`);
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
-    res.setHeader('Content-Disposition', `attachment; filename=${artifactName}`);
-    res.status(200).json({ message: 'QR Code PDF generated and uploaded successfully.' });
+
+    // Stream PDF to client
+    pdfStream.pipe(res);
+
+    const pdfBytes = await pdfDoc.save();
+    pdfStream.end(Buffer.from(pdfBytes));
+
+    console.log('PDF generation complete and sent to client.');
 
   } catch (error) {
     console.error('Error generating QR Code PDF:', error);
     res.status(500).send('Server error');
   }
 });
-
-
-
-

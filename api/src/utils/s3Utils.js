@@ -59,11 +59,11 @@ export const generateQRCode = async (data) => {
 };
 
 export const deleteFileFromS3 = async (fileUrl) => {
-  const fileKey = fileUrl.split(`${process.env.S3_BUCKET_NAME}/`)[1];
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
-    Key: fileKey,
+    Key: fileUrl,
   };
   const command = new DeleteObjectCommand(params);
+
   await s3.send(command);
 };

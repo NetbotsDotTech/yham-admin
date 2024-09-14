@@ -24,8 +24,9 @@ const app = express();
 // CORS setup
 app.use(cors({
   origin: 'http://localhost:3000', // Replace with your frontend domain
-  methods: 'GET',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allow DELETE method explicitly
   allowedHeaders: 'Content-Type',
+  credentials: true, // Enable credentials (cookies, authorization headers, etc.)
 }));
 
 const PORT = process.env.PORT || 5000;

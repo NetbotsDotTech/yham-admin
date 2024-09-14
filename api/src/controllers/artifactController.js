@@ -239,8 +239,7 @@ export const deleteArtifact = asyncHandler(async (req, res) => {
     ]);
 
     // Remove the artifact from the database
-    await artifact.remove();
-
+    await Artifact.deleteOne({ _id: req.params.id });
     res.status(204).json({
       success: true,
       statusCode: 204,

@@ -30,8 +30,9 @@ export const generateQrCodePdf = asyncHandler(async (req, res) => {
 
     const itemsPerRow = 4;
     const qrCodeSize = 100;
-    const margin = 50;
+    const margin = 60;
     const spacing = 20;
+    const itemNoMargin = 10; // Space between QR code and item number
 
     let x = margin;
     let y = page.getHeight() - margin - qrCodeSize; // Start from top
@@ -39,7 +40,7 @@ export const generateQrCodePdf = asyncHandler(async (req, res) => {
     for (let [index, artifact] of artifacts.entries()) {
       if (index % itemsPerRow === 0 && index !== 0) {
         x = margin;
-        y -= qrCodeSize + spacing;
+        y -= qrCodeSize + spacing + itemNoMargin; // Add space for item number and QR code
       }
 
       if (y < margin) {
@@ -50,6 +51,7 @@ export const generateQrCodePdf = asyncHandler(async (req, res) => {
       const qrImageDataURL = await QRCode.toDataURL(artifact.qrCode);
       const qrImage = await pdfDoc.embedPng(qrImageDataURL);
 
+      // Draw QR code
       page.drawImage(qrImage, {
         x,
         y,
@@ -57,12 +59,11 @@ export const generateQrCodePdf = asyncHandler(async (req, res) => {
         height: qrCodeSize,
       });
 
-      console.log(`Adding QR Code for ${artifact.itemNo || ''} to PDF`);
-
+      // Draw item number below the QR code
       page.drawText(artifact.itemNo || '', {
-        x: x + (qrCodeSize / 2) - ((artifact.itemNo || '').length * 5),
-        y: y - 18,
-        size: 15,
+        x: x + (qrCodeSize / 2) - ((artifact.itemNo || '').length * 3), // Center text under QR code
+        y: y - itemNoMargin, // Position item number below QR code
+        size: 12,
         color: rgb(0, 0, 0),
       });
 

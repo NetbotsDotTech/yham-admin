@@ -12,6 +12,7 @@ const Users = Loadable(lazy(() => import('pages/users/AddUser')));
 const Settings = Loadable(lazy(() => import('pages/setting/Setting')));
 const QrCodes = Loadable(lazy(() => import('pages/qr-codes/QrCodes')));
 
+const TimeTables = Loadable(lazy(() => import('pages/timetable/TimeTables')));
 
 // ==============================|| COMPONENTS ROUTES ||============================== //
 
@@ -38,6 +39,10 @@ const ComponentsRoutes = {
     {
       path: 'qr-codes',
       element: <QrCodes />
+    },
+    {
+      path: 'time-tables',
+      element: <TimeTables />
     },
     {
       path: 'settings',

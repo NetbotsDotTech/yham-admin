@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable prettier/prettier */
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
@@ -6,6 +8,8 @@ import { Visibility as VisibilityIcon, Edit as EditIcon, Delete as DeleteIcon, M
 import ViewArtifactModal from './ViewArtifact';
 import AddArtifact from './AddArtifact/AddArtifact';
 import EditArtifact from './Edit/EditArtifact';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Example = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -21,7 +25,6 @@ const Example = () => {
     setLoading(true);
     try {
       const response = await axios.get('http://localhost:5000/api/artifacts');
-      console.log("response",response.data); // Assuming response.data is an array of artifacts
       setData(response.data.data); // Extract the actual data array
       setLoading(false);
     } catch (error) {
@@ -37,14 +40,33 @@ const Example = () => {
   // Handle menu open and close
   const handleClick = (event, row) => {
     setAnchorEl(event.currentTarget);
-    setCurrentRow(row);
+    setCurrentRow(row);  // Set the current row with full row data
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  // Define columns for the table
+  // Handle delete action with toast notifications
+  const handleDelete = async () => {
+    console.log("currentRow._id",currentRow._id)
+    if (currentRow && currentRow._id) {  // Access the _id field directly
+      try {
+        await axios.delete(`http://localhost:5000/api/artifacts/${currentRow._id}`, {
+          withCredentials: true,  
+        });
+        fetchData(); 
+        handleClose(); 
+        toast.success('Artifact deleted successfully!'); 
+      } catch (error) {
+        console.error('Error deleting artifact:', error);
+        toast.error('Failed to delete artifact. Please try again.'); 
+      }
+    } else {
+      toast.error('No artifact selected for deletion.'); 
+    }
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -59,7 +81,7 @@ const Example = () => {
         )
       },
       {
-        accessorKey: 'id',
+        accessorKey: '_id',  
         header: 'Id',
         enableEditing: false,
         size: 80
@@ -100,14 +122,12 @@ const Example = () => {
     []
   );
 
-  // Define table instance
   const table = useMaterialReactTable({
     columns,
-    data, // Use the fetched data
-    state: { isLoading: loading } // Display loading indicator while fetching data
+    data, 
+    state: { isLoading: loading } 
   });
 
-  // Handle view, edit, delete actions
   const handleView = () => {
     setModalOpen({ type: 'view', open: true });
     handleClose();
@@ -120,18 +140,6 @@ const Example = () => {
       console.error('No row selected for editing');
     }
     handleClose();
-  };
-
-  const handleDelete = async () => {
-    if (currentRow && currentRow.id) {
-      try {
-        await axios.delete(`http://localhost:5000/api/artifacts/${currentRow.id}`);
-        fetchData(); // Refresh the data after deletion
-        handleClose();
-      } catch (error) {
-        console.error('Error deleting artifact:', error);
-      }
-    }
   };
 
   const handleCloseModal = () => {
@@ -150,11 +158,10 @@ const Example = () => {
     setAddModalOpen(false);
   };
 
-  // Save edited artifact
   const handleSaveEdit = async (updatedArtifact) => {
     try {
-      await axios.put(`http://localhost:5000/api/artifacts/${updatedArtifact.id}`, updatedArtifact);
-      fetchData(); // Refresh the data after editing
+      await axios.put(`http://localhost:5000/api/artifacts/${updatedArtifact._id}`, updatedArtifact);  // Use _id for update
+      fetchData(); 
       handleCloseEditModal();
     } catch (error) {
       console.error('Error saving edited artifact:', error);
@@ -163,7 +170,6 @@ const Example = () => {
 
   return (
     <>
-      {/* Button to add a new artifact */}
       <Box sx={{ mb: 2 }}>
         <Button variant="contained" color="primary" onClick={handleOpenAddModal}>
           Add New Artifact
@@ -195,6 +201,9 @@ const Example = () => {
 
       {/* EditArtifactModal to edit the selected artifact */}
       <EditArtifact open={editModalOpen} handleClose={handleCloseEditModal} artifact={currentRow} onSave={handleSaveEdit} />
+
+      {/* Toast container for notifications */}
+      <ToastContainer />
     </>
   );
 };

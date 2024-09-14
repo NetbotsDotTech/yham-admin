@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 // type
-import { Home3, HomeTrendUp, Box, Archive, User,ScanBarcode,  Setting2 } from 'iconsax-react';
+import { Home3, HomeTrendUp, Box, Archive, User,ScanBarcode, Timer1, Setting2 } from 'iconsax-react';
 
 // icons
 const icons = {
@@ -10,6 +10,7 @@ const icons = {
   stockRegistering: Archive,
   users: User,
   settings: Setting2,
+  timetable: Timer1,
   ScanBarcode: ScanBarcode
 };
 
@@ -59,6 +60,14 @@ const UpdatedMenu = {
       type: 'item',
       url: '/qr-codes',
       icon: icons.ScanBarcode,
+      breadcrumbs: false
+    },
+      {
+      id: 'timetable',
+      title: 'Timimgs',
+      type: 'item',
+      url: '/time-tables',
+      icon: icons.timetable,
       breadcrumbs: false
     },
     {

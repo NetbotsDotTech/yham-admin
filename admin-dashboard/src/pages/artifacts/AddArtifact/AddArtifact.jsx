@@ -1,6 +1,17 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { Grid, TextField, Button, Typography, IconButton, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
+import {
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  IconButton,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  LinearProgress
+} from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import VoiceRecording from './VoiceRecording';
@@ -28,6 +39,31 @@ export default function AddArtifact({ open, handleClose }) {
     images: [],
     audio: null
   });
+
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const validate = () => {
+    let tempErrors = {};
+    tempErrors.name = formData.name ? '' : 'Name is required.';
+    tempErrors.itemNo = formData.itemNo ? '' : 'Item No is required.';
+    tempErrors.serialNo = formData.serialNo ? '' : 'Serial No is required.';
+    tempErrors.description = formData.description ? '' : 'Description is required.';
+    tempErrors.madeOf = formData.madeOf ? '' : 'Material (Made Of) is required.';
+    tempErrors.shelfNo = formData.shelfNo ? '' : 'Shelf No is required.';
+    tempErrors.hallNo = formData.hallNo ? '' : 'Hall No is required.';
+    tempErrors.images = formData.images.length > 0 ? '' : 'At least one image is required.';
+
+    // Validate particulars fields if provided
+    Object.keys(formData.particulars).forEach((key) => {
+      if (formData.particulars[key] && isNaN(formData.particulars[key])) {
+        tempErrors.particulars = { ...tempErrors.particulars, [key]: 'Must be a number' };
+      }
+    });
+
+    setErrors(tempErrors);
+    return Object.values(tempErrors).every((x) => x === '');
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -69,13 +105,12 @@ export default function AddArtifact({ open, handleClose }) {
     }));
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: 'image/*',
-    multiple: true,
-    onDrop: handleImageUpload
-  });
-
   const handleSubmit = async () => {
+    if (!validate()) {
+      return;
+    }
+
+    setLoading(true);
     const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
       if (key === 'particulars') {
@@ -87,7 +122,6 @@ export default function AddArtifact({ open, handleClose }) {
           formDataToSend.append('images', image);
         });
       } else if (key === 'audio' && formData.audio) {
-        // Append the audio blob with a proper file name and type
         formDataToSend.append('audio', formData.audio, `recording-${Date.now()}.wav`);
       } else {
         formDataToSend.append(key, formData[key]);
@@ -95,42 +129,25 @@ export default function AddArtifact({ open, handleClose }) {
     });
 
     try {
-      await axios
-        .post('http://localhost:5000/api/artifacts', formDataToSend, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-        .then(() => {
-          toast.success('Artifact added successfully!');
-          setFormData({
-            name: '',
-            itemNo: '',
-            serialNo: '',
-            description: '',
-            madeOf: '',
-            age: '',
-            shelfNo: '',
-            hallNo: '',
-            particulars: {
-              width: '',
-              depth: '',
-              circumference: '',
-              diameters: '',
-              weight: ''
-            },
-            images: [],
-            audio: null
-          });
-          handleClose();
-        });
-      
-      // Clear form data
-  
+      await axios.post('http://localhost:5000/api/artifacts', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      toast.success('Artifact added successfully!');
+      handleClose();
     } catch (error) {
       toast.error('Failed to add artifact. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: 'image/*',
+    multiple: true,
+    onDrop: handleImageUpload
+  });
 
   return (
     <>
@@ -144,7 +161,8 @@ export default function AddArtifact({ open, handleClose }) {
             width: '90%',
             height: '95%',
             maxWidth: 'none',
-            maxHeight: 'none'
+            maxHeight: 'none',
+            margin: '20px' // Add margin around the modal
           }
         }}
       >
@@ -166,6 +184,8 @@ export default function AddArtifact({ open, handleClose }) {
                 onChange={handleInputChange}
                 margin="normal"
                 variant="outlined"
+                error={!!errors.name}
+                helperText={errors.name}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -177,6 +197,8 @@ export default function AddArtifact({ open, handleClose }) {
                 onChange={handleInputChange}
                 margin="normal"
                 variant="outlined"
+                error={!!errors.itemNo}
+                helperText={errors.itemNo}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -188,6 +210,8 @@ export default function AddArtifact({ open, handleClose }) {
                 onChange={handleInputChange}
                 margin="normal"
                 variant="outlined"
+                error={!!errors.serialNo}
+                helperText={errors.serialNo}
               />
             </Grid>
 
@@ -201,6 +225,8 @@ export default function AddArtifact({ open, handleClose }) {
                 onChange={handleInputChange}
                 margin="normal"
                 variant="outlined"
+                error={!!errors.description}
+                helperText={errors.description}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -212,6 +238,8 @@ export default function AddArtifact({ open, handleClose }) {
                 onChange={handleInputChange}
                 margin="normal"
                 variant="outlined"
+                error={!!errors.madeOf}
+                helperText={errors.madeOf}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -236,6 +264,8 @@ export default function AddArtifact({ open, handleClose }) {
                 onChange={handleInputChange}
                 margin="normal"
                 variant="outlined"
+                error={!!errors.shelfNo}
+                helperText={errors.shelfNo}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -247,6 +277,8 @@ export default function AddArtifact({ open, handleClose }) {
                 onChange={handleInputChange}
                 margin="normal"
                 variant="outlined"
+                error={!!errors.hallNo}
+                helperText={errors.hallNo}
               />
             </Grid>
 
@@ -265,6 +297,8 @@ export default function AddArtifact({ open, handleClose }) {
                     onChange={handleParticularsChange}
                     margin="normal"
                     variant="outlined"
+                    error={!!errors.particulars?.width}
+                    helperText={errors.particulars?.width}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -276,6 +310,8 @@ export default function AddArtifact({ open, handleClose }) {
                     onChange={handleParticularsChange}
                     margin="normal"
                     variant="outlined"
+                    error={!!errors.particulars?.depth}
+                    helperText={errors.particulars?.depth}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -287,6 +323,8 @@ export default function AddArtifact({ open, handleClose }) {
                     onChange={handleParticularsChange}
                     margin="normal"
                     variant="outlined"
+                    error={!!errors.particulars?.circumference}
+                    helperText={errors.particulars?.circumference}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -298,6 +336,8 @@ export default function AddArtifact({ open, handleClose }) {
                     onChange={handleParticularsChange}
                     margin="normal"
                     variant="outlined"
+                    error={!!errors.particulars?.diameters}
+                    helperText={errors.particulars?.diameters}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -309,6 +349,8 @@ export default function AddArtifact({ open, handleClose }) {
                     onChange={handleParticularsChange}
                     margin="normal"
                     variant="outlined"
+                    error={!!errors.particulars?.weight}
+                    helperText={errors.particulars?.weight}
                   />
                 </Grid>
               </Grid>
@@ -348,11 +390,18 @@ export default function AddArtifact({ open, handleClose }) {
             </Grid>
           </Grid>
         </DialogContent>
+        {loading && <LinearProgress />} {/* Show Progress Bar when loading */}
+
         <DialogActions>
           <Button onClick={handleClose} color="primary" variant="contained">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} color="primary" variant="contained">
+          <Button
+            onClick={handleSubmit}
+            color="primary"
+            variant="contained"
+            disabled={loading} // Disable Save button while loading
+          >
             Save
           </Button>
         </DialogActions>

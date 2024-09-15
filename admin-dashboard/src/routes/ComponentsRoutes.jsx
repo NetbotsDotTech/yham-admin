@@ -1,8 +1,8 @@
+/* eslint-disable prettier/prettier */
 import { lazy } from 'react';
-
-// project-imports
 import MainLayout from 'layout/Dashboard/index';
 import Loadable from 'components/Loadable';
+import RootRoute from './RootRoute'; 
 
 // render - data display components
 const Dashboard = Loadable(lazy(() => import('pages/dashboard/default')));
@@ -11,39 +11,46 @@ const StockRegistering = Loadable(lazy(() => import('pages/stocks/ViewAllStock')
 const Users = Loadable(lazy(() => import('pages/users/AddUser')));
 const Settings = Loadable(lazy(() => import('pages/setting/Setting')));
 const QrCodes = Loadable(lazy(() => import('pages/qr-codes/QrCodes')));
-
+const TimeTables = Loadable(lazy(() => import('pages/timetable/TimeTables')));
+const Login = Loadable(lazy(() => import('pages/auth/login')));
+const EnterEmail = Loadable(lazy(() => import('pages/auth/enterEmail')));
+const VerifyOtp = Loadable(lazy(() => import('pages/auth/otpConfirmation')));
+const UpdatePassword = Loadable(lazy(() => import('pages/auth/updatePassword')));
 
 // ==============================|| COMPONENTS ROUTES ||============================== //
 
-const ComponentsRoutes = {
-  path: '/',
-  element: <MainLayout />,
-  children: [
-    {
-      path: 'dashboard',
-      element: <Dashboard />
-    },
-    {
-      path: 'artifacts',
-      element: <Artifacts />
-    },
-    {
-      path: 'stock-registering',
-      element: <StockRegistering />
-    },
-    {
-      path: 'users',
-      element: <Users />
-    },
-    {
-      path: 'qr-codes',
-      element: <QrCodes />
-    },
-    {
-      path: 'settings',
-      element: <Settings />
-    }
-  ]
-};
-
+const ComponentsRoutes = [
+  {
+    path: '/',
+    element: <RootRoute /> 
+  },
+  {
+    path: '/',
+    element: <MainLayout />,
+    children: [
+      { path: 'dashboard', element: <Dashboard /> },
+      { path: 'artifacts', element: <Artifacts /> },
+      { path: 'stock-registering', element: <StockRegistering /> },
+      { path: 'users', element: <Users /> },
+      { path: 'qr-codes', element: <QrCodes /> },
+      { path: 'time-tables', element: <TimeTables /> },
+      { path: 'settings', element: <Settings /> }
+    ]
+  },
+  {
+    path: '/login',
+    element: <Login />
+  },
+  {
+    path: '/forgot-password',
+    element: <EnterEmail />
+  },
+  {
+    path: '/verify-otp',
+    element: <VerifyOtp />
+  },  {
+    path: '/update-password',
+    element: <UpdatePassword />
+  }
+];
 export default ComponentsRoutes;

@@ -15,7 +15,6 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
     res.cookie('token', generateToken(user._id), {
-      httpOnly: true, 
       secure: process.env.NODE_ENV === 'production', 
       sameSite: 'Strict', 
       maxAge: 30 * 24 * 60 * 60 * 1000, 
@@ -42,7 +41,6 @@ export const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
   if (user && (await user.matchPassword(password))) {
     res.cookie('token', generateToken(user._id), {
-      httpOnly: true,
       secure: process.env.NODE_ENV === 'production', 
       sameSite: 'Strict', 
       maxAge: 30 * 24 * 60 * 60 * 1000, 
@@ -70,3 +68,4 @@ export const logoutUser = (req, res) => {
     res.status(200).json({ message: 'Logged out successfully' });
   };
   
+

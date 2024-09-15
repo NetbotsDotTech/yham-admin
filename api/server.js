@@ -9,29 +9,29 @@ import cors from 'cors';
 
 import { errorHandler } from './src/middlewares/errorHandler.js';
 import connectDB from './db.js';
-
+import cookieParser from 'cookie-parser';
 
 import userRoutes from './src/routes/userRoutes.js';
 import artifactRoutes from './src/routes/artifactRoutes.js';
 import qrRoutes from './src/routes/qrCodes.js';
 import timeTableRoutes from './src/routes/timeTableRoutes.js';
+import otpRoutes from './src/routes/otpRoutes.js';
 
 
 
 dotenv.config();
 const app = express();
-
+app.use(cookieParser());
 // CORS setup
 app.use(cors({
-  origin: 'http://localhost:3000', // Replace with your frontend domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allow DELETE method explicitly
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
   allowedHeaders: 'Content-Type',
-  credentials: true, // Enable credentials (cookies, authorization headers, etc.)
+  credentials: true, 
 }));
 
 const PORT = process.env.PORT || 5000;
 
-// Setting up the spinner and progress bar for database connection
 const spinner = ora(chalk.yellow('Connecting to the database...')).start();
 connectDB()
   .then(() => {
@@ -40,7 +40,7 @@ connectDB()
   .catch((err) => {
     spinner.fail(chalk.red('Database connection failed'));
     console.error(err);
-    process.exit(1); // Exit the application if DB connection fails
+    process.exit(1); 
   });
 
 app.use(express.json());
@@ -50,7 +50,7 @@ app.use('/api/user',userRoutes );
 app.use('/api/artifacts', artifactRoutes);
 app.use('/api/qr-codes', qrRoutes);
 app.use('/api/time-table',timeTableRoutes  );
-
+app.use('/api/otp',  otpRoutes);
 app.use(errorHandler);
 
 const progressBar = new cliProgress.SingleBar({

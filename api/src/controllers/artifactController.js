@@ -94,6 +94,43 @@ export const getArtifacts = asyncHandler(async (req, res) => {
   }
 });
 
+
+export const getArtifactByItemNo = asyncHandler(async (req, res) => {
+  const { id } = req.params; // Extract itemNo from the request parameters
+
+  try {
+    // Find the artifact by itemNo
+    const artifact = await Artifact.findOne({ itemNo:id });
+
+    if (!artifact) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: 'Artifact not found',
+      });
+    }
+
+    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Artifact retrieved successfully',
+      data: artifact,
+    });
+  } catch (error) {
+    console.error('Error fetching artifact:', error);
+    res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: 'An error occurred while fetching the artifact',
+      error: error.message,
+    });
+  }
+});
+
 // Get Artifact by ID
 export const getArtifactById = asyncHandler(async (req, res) => {
   try {

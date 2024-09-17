@@ -9,7 +9,7 @@ import HomePage from "./Pages/Home";
 import AboutUs from "./components/AboutUs";
 import ItemDetails from "./components/ItemDetails";
 import PageNotFound from "./components/PageNotFound";
-
+import ViewArtifact from "./Pages/ArifactDetails"
 function App() {
   return (
     <Router>
@@ -23,7 +23,10 @@ function App() {
           <Route path="/items-details/:id" element={<ItemDetails />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/artifacts-details/:id" element={<ViewArtifact />} />
+
           <Route path="*" element={<PageNotFound />} />
+
 
         </Routes>
         <Footer />

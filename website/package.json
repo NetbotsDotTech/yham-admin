@@ -5,10 +5,12 @@
   "type": "module",
   "proxy": "http://localhost:5000",
   "scripts": {
-    "dev": "vite",
+    "start": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
+    "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -32,6 +34,7 @@
     "react-qr-reader": "^3.0.0-beta-1",
     "react-router-dom": "^6.26.1",
     "react-slick": "^0.30.2",
+    "react-toastify": "^10.0.5",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.12"
   },

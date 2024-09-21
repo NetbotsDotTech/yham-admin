@@ -1,5 +1,7 @@
-import { useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Slider from 'react-slick';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "magnific-popup/dist/magnific-popup.css";
@@ -8,47 +10,25 @@ import "slick-carousel/slick/slick-theme.css";
 import "odometer/themes/odometer-theme-default.css";
 import "../style.css";
 
-const portfolioItems = [
-  {
-    id: 1,
-    imgSrc: '/img/portfolio/portfolio1_1.png',
-    title: 'Sculpting Dreams into Reality',
-    link: 'project-details.html',
-  },
-  {
-    id: 2,
-    imgSrc: '/img/portfolio/portfolio1_2.png',
-    title: 'Echoes of Genius Hues of Heritage',
-    link: 'project-details.html',
-  },
-  {
-    id: 3,
-    imgSrc: '/img/portfolio/portfolio1_3.png',
-    title: 'Carving Moments, Capturing Emotic',
-    link: 'project-details.html',
-  },
-  {
-    id: 4,
-    imgSrc: '/img/portfolio/portfolio1_1.png',
-    title: 'Sculpting Dreams into Reality',
-    link: 'project-details.html',
-  },
-  {
-    id: 5,
-    imgSrc: '/img/portfolio/portfolio1_2.png',
-    title: 'Echoes of Genius Hues of Heritage',
-    link: 'project-details.html',
-  },
-  {
-    id: 6,
-    imgSrc: '/img/portfolio/portfolio1_3.png',
-    title: 'Carving Moments, Capturing Emotic',
-    link: 'project-details.html',
-  },
-];
-
 export default function Items() {
   const sliderRef = useRef(null);
+  const [artifacts, setArtifacts] = useState([]);
+  const navigate = useNavigate();
+
+  // Fetch data from backend
+  useEffect(() => {
+    const fetchArtifacts = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/artifacts');
+        console.log('Artifacts data:', response.data);
+        setArtifacts(response.data.data); // Assuming response.data is an array of artifacts
+      } catch (error) {
+        console.error('Error fetching artifacts data:', error);
+      }
+    };
+
+    fetchArtifacts();
+  }, []);
 
   const settings = {
     dots: true,
@@ -110,23 +90,37 @@ export default function Items() {
         </div>
         <div className="container-fluid wow custom-anim-top" data-wow-duration="1.5s" data-wow-delay="0.1s">
           <Slider ref={sliderRef} {...settings} className="global-carousel portfolio-slider1 gx-20">
-            {portfolioItems.map(item => (
-              <div key={item.id} className="portfolio-card">
+            {artifacts.map(item => (
+              <div key={item._id} className="portfolio-card">
                 <div className="portfolio-thumb">
-                  <a className="popup-image icon-btn" href={item.imgSrc}>
-                    <i className="far fa-eye"></i>
-                  </a>
+                
                   <img 
-                  src={item.imgSrc} 
-                  alt="portfolio"
-                  style={{border: "3px solid #fff" , borderRadius: "20px" , margin: "10px"}}
+                    src={item.images[0]} 
+                    alt={item.name}
+                    style={
+                      { border: "3px solid #fff",
+                         borderRadius: "20px", 
+                         margin: "10px" ,
+                         width: "100%", 
+                         height: "100%", 
+                         objectFit: "cover" 
+                        }}
                   />
                 </div>
                 <div className="portfolio-details">
-                  <h3 className="portfilio-card-title">
-                    <a href={item.link}>{item.title}</a>
+                  <h3 className="portfolio-card-title">
+                    <a 
+                      href="#" 
+                      onClick={() => navigate(`/artifacts-details/${item.itemNo}`)}
+                    >
+                      {item.name}
+                    </a>
                   </h3>
-                  <a href={item.link} className="btn btn-border btn-radius">
+                  <a 
+                    href="#" 
+                    onClick={() => navigate(`/artifacts-details/${item.itemNo}`)} 
+                    className="btn btn-border btn-radius"
+                  >
                     View Details of This Collection
                   </a>
                 </div>

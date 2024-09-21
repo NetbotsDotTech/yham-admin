@@ -20,6 +20,7 @@ import axios from "axios";
 import "react-image-gallery/styles/css/image-gallery.css";
 import ImageGallery from "react-image-gallery";
 import { Howl } from "howler";
+import FeedbackSection from "../components/FeedbeackSection"
 
 const ViewArtifact = () => {
   const { id } = useParams();
@@ -160,6 +161,49 @@ const ViewArtifact = () => {
         </Typography>
       </IconButton>
       <Grid container spacing={3}>
+      <Grid item xs={12}>
+          <Card
+            sx={{
+              padding: 2,
+              borderRadius: 2,
+              boxShadow: 3,
+              backgroundColor: "background.paper",
+            }}
+          >
+            <CardContent>
+              <Typography
+                variant="h5"
+                gutterBottom
+                fontFamily="'Roboto', sans-serif"
+                fontWeight="bold"
+                align="center"
+              >
+                Media
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                {artifact.images && artifact.images.length > 0 && (
+                  <Grid item xs={12}>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      fontFamily="'Roboto', sans-serif"
+                      fontWeight="bold"
+                    >
+                      Images
+                    </Typography>
+                    <ImageGallery
+                      items={images}
+                      showPlayButton={false}
+                      showThumbnails={true}
+                      thumbnailPosition="left"
+                    />
+                  </Grid>
+                )}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
         <Grid item xs={12} md={6}>
           <Card
             sx={{
@@ -241,49 +285,7 @@ const ViewArtifact = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12}>
-          <Card
-            sx={{
-              padding: 2,
-              borderRadius: 2,
-              boxShadow: 3,
-              backgroundColor: "background.paper",
-            }}
-          >
-            <CardContent>
-              <Typography
-                variant="h5"
-                gutterBottom
-                fontFamily="'Roboto', sans-serif"
-                fontWeight="bold"
-                align="center"
-              >
-                Media
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              <Grid container spacing={2}>
-                {artifact.images && artifact.images.length > 0 && (
-                  <Grid item xs={12}>
-                    <Typography
-                      variant="h6"
-                      gutterBottom
-                      fontFamily="'Roboto', sans-serif"
-                      fontWeight="bold"
-                    >
-                      Images
-                    </Typography>
-                    <ImageGallery
-                      items={images}
-                      showPlayButton={false}
-                      showThumbnails={true}
-                      thumbnailPosition="left"
-                    />
-                  </Grid>
-                )}
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+      
         <Grid item xs={12}>
           <Card
             sx={{
@@ -414,9 +416,29 @@ const ViewArtifact = () => {
           </Card>
         </Grid>
       </Grid>
+
+
+
+<Card sx={{ padding: 2, borderRadius: 2, boxShadow: 3, backgroundColor: "background.paper", mt: 5 }}>
+
+<FeedbackSection artifactId={artifact._id} />
+
+</Card>
+
+
+           
+      
     </Box>
   );
 };
 
 
 export default ViewArtifact;
+
+
+
+
+
+
+
+

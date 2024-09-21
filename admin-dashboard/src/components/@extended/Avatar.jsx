@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
-import MuiAvatar from '@mui/material/Avatar';
-
+import MuiAvatar from '@mui/icons-material/AdminPanelSettings';
 // project-imports
 import getColors from 'utils/getColors';
 

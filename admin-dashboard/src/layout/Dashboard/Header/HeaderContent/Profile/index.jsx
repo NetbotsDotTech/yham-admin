@@ -1,8 +1,8 @@
+/* eslint-disable prettier/prettier */
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
-
-// material-ui
-import { useTheme } from '@mui/material/styles';
+import { useRef, useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom'; 
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardContent from '@mui/material/CardContent';
@@ -11,53 +11,33 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import Stack from '@mui/material/Stack';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-
-// project-imports
-import ProfileTab from './ProfileTab';
-import SettingTab from './SettingTab';
 import Avatar from 'components/@extended/Avatar';
 import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
-import IconButton from 'components/@extended/IconButton';
-
-// assets
+import { useTheme } from '@mui/material/styles'; // Import useTheme
+import { Profile, Logout, Edit } from 'iconsax-react';
 import avatar1 from 'assets/images/users/avatar-6.png';
-import { Setting2, Profile, Logout } from 'iconsax-react';
-
-// tab panel wrapper
-function TabPanel({ children, value, index, ...other }) {
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`profile-tabpanel-${index}`}
-      aria-labelledby={`profile-tab-${index}`}
-      {...other}
-      sx={{ p: 1 }}
-    >
-      {value === index && children}
-    </Box>
-  );
-}
-
-function a11yProps(index) {
-  return {
-    id: `profile-tab-${index}`,
-    'aria-controls': `profile-tabpanel-${index}`
-  };
-}
 
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 export default function ProfilePage() {
-  const theme = useTheme();
+  const theme = useTheme(); // Now it will work
+  const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    // Logout
+  // Retrieve user details from localStorage
+  const [userDetails, setUserDetails] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : { name: 'User', role: 'Guest' };
+  });
+
+  const handleLogout = () => {
+    // Perform logout action: clear localStorage and remove cookies
+    localStorage.removeItem('user');
+    Cookies.remove('token');
+    
+    // Navigate back to login page
+    navigate('/login');
   };
 
   const anchorRef = useRef(null);
@@ -71,12 +51,6 @@ export default function ProfilePage() {
       return;
     }
     setOpen(false);
-  };
-
-  const [value, setValue] = useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
   };
 
   return (
@@ -125,9 +99,6 @@ export default function ProfilePage() {
                 width: 290,
                 minWidth: 240,
                 maxWidth: 290,
-                [theme.breakpoints.down('md')]: {
-                  maxWidth: 250
-                },
                 borderRadius: 1.5
               }}
             >
@@ -139,55 +110,55 @@ export default function ProfilePage() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} />
                           <Stack>
-                            <Typography variant="subtitle1">Admin</Typography>
-                            <Typography variant="body2" color="secondary"></Typography>
+                            <Typography variant="subtitle1">{userDetails.name}</Typography>
+                            <Typography variant="body2" color="secondary">{userDetails.role}</Typography>
                           </Stack>
                         </Stack>
                       </Grid>
-                      <Grid item>
-                        <Tooltip title="Logout">
-                          <IconButton size="large" color="error" sx={{ p: 1 }} onClick={handleLogout}>
-                            <Logout variant="Bulk" />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
                     </Grid>
-                  </CardContent>
 
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
-                      <Tab
+                    <Stack spacing={2} mt={2}>
+                      <ButtonBase
                         sx={{
                           display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          textTransform: 'capitalize'
+                          justifyContent: 'space-between',
+                          p: 1,
+                          borderRadius: 1,
+                          '&:hover': { bgcolor: 'secondary.lighter' }
                         }}
-                        icon={<Profile size={18} style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Profile"
-                        {...a11yProps(0)}
-                      />
-                      <Tab
+                      >
+                        <Profile size={18} />
+                        <Typography variant="body2">View Profile</Typography>
+                      </ButtonBase>
+
+                      <ButtonBase
                         sx={{
                           display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          textTransform: 'capitalize'
+                          justifyContent: 'space-between',
+                          p: 1,
+                          borderRadius: 1,
+                          '&:hover': { bgcolor: 'secondary.lighter' }
                         }}
-                        icon={<Setting2 size={18} style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Setting"
-                        {...a11yProps(1)}
-                      />
-                    </Tabs>
-                  </Box>
-                  <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ProfileTab handleLogout={handleLogout} />
-                  </TabPanel>
-                  <TabPanel value={value} index={1} dir={theme.direction}>
-                    <SettingTab />
-                  </TabPanel>
+                      >
+                        <Edit size={18} />
+                        <Typography variant="body2">Edit Profile</Typography>
+                      </ButtonBase>
+
+                      <ButtonBase
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          p: 1,
+                          borderRadius: 1,
+                          '&:hover': { bgcolor: 'secondary.lighter' }
+                        }}
+                        onClick={handleLogout}
+                      >
+                        <Logout size={18} />
+                        <Typography variant="body2" color="error">Logout</Typography>
+                      </ButtonBase>
+                    </Stack>
+                  </CardContent>
                 </MainCard>
               </ClickAwayListener>
             </Paper>
@@ -198,4 +169,7 @@ export default function ProfilePage() {
   );
 }
 
-TabPanel.propTypes = { children: PropTypes.node, value: PropTypes.number, index: PropTypes.number, other: PropTypes.any };
+ProfilePage.propTypes = {
+  userName: PropTypes.string,
+  token: PropTypes.string
+};

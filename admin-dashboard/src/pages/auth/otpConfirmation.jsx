@@ -1,20 +1,24 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { Box, Card, CardContent, TextField, Button, Typography } from '@mui/material';
+import { Box, Card, CardContent, TextField, Button, Typography, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const VerifyOtp = () => {
   const [otp, setOtp] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state
   const navigate = useNavigate();
 
   const handleVerifyOtp = async () => {
+    setLoading(true); // Start loading
     try {
-      await axios.post('http://localhost:5000/api/otp/verify', { otp });
+      await axios.post('http://localhost:5000/api/otp/verify-otp', { otp });
       navigate('/update-password'); // Navigate to password update page
     } catch (error) {
       console.error('Error verifying OTP:', error.response.data.message);
       alert('Invalid or expired OTP. Please try again.');
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -25,7 +29,7 @@ const VerifyOtp = () => {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        bgcolor: '#f5f5f5'
+        bgcolor: '#f5f5f5',
       }}
     >
       <Card sx={{ maxWidth: 400, width: '100%' }}>
@@ -47,9 +51,10 @@ const VerifyOtp = () => {
             variant="contained"
             color="primary"
             onClick={handleVerifyOtp}
+            disabled={loading} // Disable while loading
             sx={{ mt: 2 }}
           >
-            Verify OTP
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Verify OTP'}
           </Button>
         </CardContent>
       </Card>

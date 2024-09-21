@@ -11,8 +11,10 @@ export const isAuthenticated = () => {
 
 const ProtectedRoute = () => {
   if (isAuthenticated()) {
+    console.log('Authenticated');
     return <Outlet />; 
   } else {
+    console.log('Not Authenticated');
     return <Navigate to="/login" />; 
   }
 };

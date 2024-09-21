@@ -30,6 +30,7 @@
     "iconsax-react": "^0.0.8",
     "install": "^0.13.0",
     "js-cookie": "^3.0.5",
+    "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "material-react-table": "^2.13.1",
     "npm": "^10.8.2",

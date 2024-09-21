@@ -7,6 +7,7 @@ const userSchema = mongoose.Schema(
     email: { type: String, required: true, unique: true },
     phoneNo: { type: Number },
     otp: { type: Number },
+    otpExpires:{ type: Date },
 
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin', 'staff'], default: 'user' },

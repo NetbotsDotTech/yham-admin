@@ -16,6 +16,8 @@ import artifactRoutes from './src/routes/artifactRoutes.js';
 import qrRoutes from './src/routes/qrCodes.js';
 import timeTableRoutes from './src/routes/timeTableRoutes.js';
 import otpRoutes from './src/routes/otpRoutes.js';
+import FeedbackRoutes from './src/routes/feedbackRoutes.js';
+
 
 
 
@@ -23,14 +25,38 @@ dotenv.config();
 const app = express();
 app.use(cookieParser());
 // CORS setup
-app.use(cors({
-  origin: 'http://localhost:5173/',
-  // origin: ['http://localhost:3000','http://localhost:5173/'],
 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
-  allowedHeaders: 'Content-Type',
+
+
+
+const allowedOrigins = [
+  'http://localhost:3000', // Your website
+  'http://localhost:5173', // Your dashboard
+  //'https://your-production-domain.com', 
+];
+
+// Custom CORS middleware to handle dynamic origins
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], 
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'], 
   credentials: true, 
-}));
+  optionsSuccessStatus: 204, 
+};
+
+// Use the CORS middleware globally
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
+
+
 
 const PORT = process.env.PORT || 5000;
 
@@ -46,10 +72,15 @@ connectDB()
   });
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+
 
 
 app.use('/api/user',userRoutes );
 app.use('/api/artifacts', artifactRoutes);
+app.use('/api/feedback', FeedbackRoutes);
 app.use('/api/qr-codes', qrRoutes);
 app.use('/api/time-table',timeTableRoutes  );
 app.use('/api/otp',  otpRoutes);

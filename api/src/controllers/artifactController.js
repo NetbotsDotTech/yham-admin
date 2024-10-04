@@ -1,7 +1,8 @@
 import asyncHandler from 'express-async-handler';
 import Artifact from '../models/artifactModel.js';
+import Log from '../models/logs.js';
 import { generateQRCode, deleteFileFromS3, uploadFileToS3 } from '../utils/s3Utils.js';
-import { upload } from '../utils/multer.js'; 
+import { upload } from '../utils/multer.js';
 
 // Create Artifact
 export const createArtifact = asyncHandler(async (req, res) => {
@@ -77,10 +78,10 @@ export const createArtifact = asyncHandler(async (req, res) => {
 export const getArtifacts = asyncHandler(async (req, res) => {
   try {
     const artifacts = await Artifact.find({});
-    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    // res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+    // res.header('Access-Control-Allow-Credentials', 'true');
+    // res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.status(200).json({
       success: true,
       statusCode: 200,
@@ -104,7 +105,7 @@ export const getArtifactByItemNo = asyncHandler(async (req, res) => {
 
   try {
     // Find the artifact by itemNo
-    const artifact = await Artifact.findOne({ itemNo:id });
+    const artifact = await Artifact.findOne({ itemNo: id });
 
     if (!artifact) {
       return res.status(404).json({
@@ -114,10 +115,7 @@ export const getArtifactByItemNo = asyncHandler(async (req, res) => {
       });
     }
 
-    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
     res.status(200).json({
       success: true,
       statusCode: 200,
@@ -298,3 +296,112 @@ export const deleteArtifact = asyncHandler(async (req, res) => {
   }
 });
 
+
+
+
+// New controller function to calculate totals
+// New controller function to calculate totals
+export const getArtifactStatistics = asyncHandler(async (req, res) => {
+ try {
+  
+  console.log("Get Artifact Statistics API Triggered");
+  res.status(200).json({
+    success: true,
+    statusCode: 200,
+    message: 'Artifact statistics retrieved successfully',
+  });
+  
+ } catch (error) {
+  console.error('Error fetching artifact statistics:', error);
+  res.status(500).json({
+    success: false,
+    statusCode: 500,
+    message: 'An error occurred while fetching the artifact statistics',
+    error: error.message,
+  })
+ }
+});
+
+
+
+// const artifacts = await Artifact.find({});
+//   const totalArtifacts = artifacts.length;
+//   const totalImages = artifacts.reduce((acc, artifact) => acc + artifact.images.length, 0);
+//   const totalAudio = artifacts.reduce((acc, artifact) => acc + (artifact.audio ? 1 : 0), 0);
+//   const totalQRCodes = artifacts.reduce((acc, artifact) => acc + (artifact.qrCode ? 1 : 0), 0);
+
+//   res.status(200).json({
+//     success: true,
+//     statusCode: 200,
+//     message: 'Artifact statistics retrieved successfully',
+//     data: {
+//       totalArtifacts,
+//       totalImages,
+//       totalAudio,
+//       totalQRCodes,
+//     },
+//   });
+
+// try {
+//   const totalArtifacts = await Artifact.countDocuments();
+//   const activeArtifacts = await Artifact.countDocuments({ status: 'active' });
+//   const inactiveArtifacts = await Artifact.countDocuments({ status: 'inactive' });
+
+//   const mostViewedArtifacts = await Artifact.find().sort({ viewCount: -1 }).limit(10); // Top 10 most viewed
+
+//   // Calculate repeat customer rate (month-wise)
+//   const currentMonth = new Date().getMonth();
+//   const currentYear = new Date().getFullYear();
+
+//   // Get logs for the current month
+//   const logs = await Log.find({
+//     timestamp: {
+//       $gte: new Date(currentYear, currentMonth, 1),
+//       $lt: new Date(currentYear, currentMonth + 1, 1),
+//     },
+//   });
+
+//   // Get unique customers who have visited this month
+//   const uniqueCustomers = new Set();
+//   const repeatCustomers = new Set();
+
+//   logs.forEach(log => {
+//     if (log.customerId) {
+//       uniqueCustomers.add(log.customerId); // Add unique customers
+//     }
+//     if (log.action === 'GET' && log.userId) {
+//       repeatCustomers.add(log.userId); // Add repeat customers based on action
+//     }
+//   });
+
+//   const repeatCustomerRate = (repeatCustomers.size / uniqueCustomers.size) * 100 || 0; // Calculate rate
+
+//   res.status(200).json({
+//     success: true,
+//     statusCode: 200,
+//     message: 'Artifact statistics retrieved successfully',
+//     data: {
+//       totalArtifacts,
+//       activeArtifacts,
+//       inactiveArtifacts,
+//       mostViewedArtifacts,
+//       repeatCustomerRate: repeatCustomerRate.toFixed(2) + '%', // Format to percentage
+
+//     },
+//   });
+
+
+// } catch (error) {
+//   console.error('Error fetching artifact statistics:', error);
+//   res.status(500).json({
+//     success: false,
+//     statusCode: 500,
+//     message: 'An error occurred while fetching artifact statistics',
+//     error: error.message,
+//     requestDetails: {
+//       url: req.originalUrl,
+//       method: req.method,
+//       body: req.body,
+//     },
+//   });
+// }

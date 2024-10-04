@@ -36,10 +36,7 @@ export const getArtifactWiseFeedbacks = asyncHandler(async (req, res) => {
     if (feedbacks.length === 0) {
       return res.status(404).json({ message: 'No published feedback found for this artifact.' });
     }
-    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
     res.status(200).json({message: 'Feedbacks fetched successfully', feedbacks});
   } catch (error) {
     console.error('Error fetching feedback:', error);

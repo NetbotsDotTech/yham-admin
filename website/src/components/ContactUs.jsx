@@ -23,7 +23,7 @@ export default function ContactUs() {
             ==============================--> */}
             <div className="location-area space bg-smoke">
                 <div className="location-page-thumb">
-                    <img src="/img/normal/location-img.png" alt="img" />
+                    <img src="/img/normal/location-img.jpg" alt="img" />
                 </div>
                 <div className="container">
                     <div className="row">

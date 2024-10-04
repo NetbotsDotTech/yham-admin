@@ -5,7 +5,8 @@ import {
   getArtifactById,
   updateArtifact,
   deleteArtifact, 
-  getArtifactByItemNo
+  getArtifactByItemNo, 
+  getArtifactStatistics
 } from '../controllers/artifactController.js';
 import { generateQrCodePdf } from '../controllers/qrCodesController.js';
 import { upload } from '../utils/multer.js';
@@ -20,8 +21,13 @@ router.get('/item-wise/:id', getArtifactByItemNo);
 router.put('/:id', updateArtifact);
 router.delete('/:id', deleteArtifact);
 
+//Dashbaord Statistics
+router.get('/data', getArtifactStatistics);
+
 
 router.get('/all-qrcodes', generateQrCodePdf);
+
+
 
 
 export default router;

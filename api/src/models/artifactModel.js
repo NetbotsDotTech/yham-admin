@@ -20,6 +20,7 @@ const artifactSchema = new mongoose.Schema({
   images: [{ type: String, required: true }],
   qrCode: { type: String },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  viewCount: { type: Number, default: 0 }, // To track the number of views
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

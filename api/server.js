@@ -6,6 +6,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
+import { requestLogger, errorLogger } from './src/middlewares/logger.js';
 
 import { errorHandler } from './src/middlewares/errorHandler.js';
 import connectDB from './db.js';
@@ -23,6 +24,10 @@ import FeedbackRoutes from './src/routes/feedbackRoutes.js';
 
 dotenv.config();
 const app = express();
+// Log every incoming request
+// app.use(requestLogger);
+// app.use(errorLogger);
+
 app.use(cookieParser());
 // CORS setup
 
@@ -34,6 +39,7 @@ const allowedOrigins = [
   'http://localhost:5173', // Your dashboard
   //'https://your-production-domain.com', 
 ];
+
 
 // Custom CORS middleware to handle dynamic origins
 const corsOptions = {

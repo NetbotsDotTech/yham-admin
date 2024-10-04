@@ -1,12 +1,12 @@
 import Artifacts from "../components/Artifacts";
-import HeroSection from "../components/HeroSection";
 import Items from "../components/Items";
 import Testimonials from "../components/Testimonials";
-
+import Header from "../components/Header";
 function HomePage() {
   return (
     <>
-      <HeroSection />
+    <Header />
+      
       <Artifacts />
       <Testimonials />
       <Items />

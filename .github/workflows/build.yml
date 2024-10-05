@@ -14,14 +14,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY_DASBOARD }}
-
-      - name: Debug SSH Connection
         run: |
-          echo "Testing SSH Connection"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_DASHBOARD }} "echo Connected"
+          echo "${{ secrets.SSH_KEY_DASBOARD }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST_DASHBOARD }} >> ~/.ssh/known_hosts
 
       - name: Copy Dashboard Build Files to EC2
         env:
@@ -29,15 +25,11 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST_DASHBOARD }}
         run: |
           # Copy dist folder to the EC2 instance for the dashboard
-          echo "Copying files to EC2 instance..."
-          scp -r -o StrictHostKeyChecking=no dist/* $EC2_USER@$EC2_HOST:/var/www/html/
-          echo "Files copied successfully."
+          scp -r dist/* $EC2_USER@$EC2_HOST:/var/www/html/
 
       - name: Restart Nginx
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST_DASHBOARD }}
         run: |
-          echo "Restarting Nginx..."
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
-          echo "Nginx restarted successfully."
+          ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"

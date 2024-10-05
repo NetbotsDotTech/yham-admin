@@ -15,9 +15,10 @@ jobs:
 
       - name: Setup SSH
         run: |
-          echo "${{ secrets.SSH_KEY_DASBOARD }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST_DASHBOARD }} >> ~/.ssh/known_hosts
+          echo "${{ secrets.SSH_KEY_DASHBOARD }}" | base64 -d > /tmp/id_rsa
+          chmod 600 /tmp/id_rsa
+          eval $(ssh-agent -s)
+          ssh-add /tmp/id_rsa
 
       - name: Copy Dashboard Build Files to EC2
         env:
@@ -25,11 +26,11 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST_DASHBOARD }}
         run: |
           # Copy dist folder to the EC2 instance for the dashboard
-          scp -r dist/* $EC2_USER@$EC2_HOST:/var/www/html/
+          scp -o StrictHostKeyChecking=no -r dist/* $EC2_USER@$EC2_HOST:/var/www/html/
 
       - name: Restart Nginx
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST_DASHBOARD }}
         run: |
-          ssh $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"

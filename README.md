@@ -1,10 +1,6 @@
-Yousuf Hussainabadi Museum -  Admin Dashboard
-
-
+Yousuf Hussainabadi Museum - Admin Dashboard
 
 Yousuf Hussainabadi Museum Admin Dashboard is designed to manage and handle the CRUD operations of the Yousuf Hussainabadi Museum's website. Built using Material-UI, this dashboard offers a responsive and user-friendly interface tailored to the museum's needs.
-
-
 
 Looking for more features or customization? This dashboard is designed to be easily extendable, allowing for additional functionality as needed.
 
@@ -65,5 +61,7 @@ Issues
 If you encounter any issues, please report them via GitHub Issues. We aim to respond and resolve them as quickly as possible.
 
 Follow us
-NetBots 
+NetBots
 GitHub
+
+./run.sh

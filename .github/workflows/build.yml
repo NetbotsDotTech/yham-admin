@@ -14,15 +14,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Remove existing dist folder on EC2 before copying new one
+      # Use sudo to remove the old dist files (requires root privileges)
       - name: Remove Old Dist Files from EC2
         run: |
-          rm -rf /var/www/html/*
+          sudo rm -rf /var/www/html/*
 
       # Copy the local dist files from the GitHub runner (EC2) to the web server directory
       - name: Copy Dashboard Build Files to EC2
         run: |
-          cp -r dist/* /var/www/html/
+          sudo cp -r dist/* /var/www/html/
 
       # Restart Nginx to reflect the new changes
       - name: Restart Nginx

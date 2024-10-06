@@ -1,4 +1,4 @@
-name: Deploy YHAM
+name: Deploy Dashboard
 
 on:
   push:
@@ -7,30 +7,24 @@ on:
 
 jobs:
   deploy_dashboard:
-    runs-on: self-hosted # Use the self-hosted runner
+    runs-on: self-hosted # Use the self-hosted runner (on your EC2 instance)
 
     steps:
+      # Checkout the latest code on the runner (this step clones the repo to the EC2 runner)
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Setup SSH
+      # Remove existing dist folder on EC2 before copying new one
+      - name: Remove Old Dist Files from EC2
         run: |
-          echo "${{ secrets.SSH_KEY_DASHBOARD }}" | base64 -d > /tmp/id_rsa
-          chmod 600 /tmp/id_rsa
-          eval $(ssh-agent -s)
-          ssh-add /tmp/id_rsa
+          rm -rf /var/www/html/*
 
+      # Copy the local dist files from the GitHub runner (EC2) to the web server directory
       - name: Copy Dashboard Build Files to EC2
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST_DASHBOARD }}
         run: |
-          # Copy dist folder to the EC2 instance for the dashboard
-          scp -o StrictHostKeyChecking=no -r dist/* $EC2_USER@$EC2_HOST:/var/www/html/
+          cp -r dist/* /var/www/html/
 
+      # Restart Nginx to reflect the new changes
       - name: Restart Nginx
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST_DASHBOARD }}
         run: |
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "sudo systemctl restart nginx"
+          sudo systemctl restart nginx

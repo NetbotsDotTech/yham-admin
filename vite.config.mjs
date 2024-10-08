@@ -1,40 +1,42 @@
-// https://github.com/vitejs/vite/discussions/3448
+/* eslint-disable prettier/prettier */
 import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import jsconfigPaths from 'vite-jsconfig-paths';
+import { version } from './package.json'; // Import version from package.json
 
 // ----------------------------------------------------------------------
 
 export default defineConfig({
   plugins: [react(), jsconfigPaths()],
-  // https://github.com/jpuri/react-draft-wysiwyg/issues/1317
+  // Base URL for the app
   base: '/',
   define: {
-    global: 'window'
+    global: 'window',
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(version), // Expose the version as an environment variable
   },
   resolve: {
     alias: [
       {
         find: /^~(.+)/,
-        replacement: path.join(process.cwd(), 'node_modules/$1')
+        replacement: path.join(process.cwd(), 'node_modules/$1'),
       },
       {
         find: /^src(.+)/,
-        replacement: path.join(process.cwd(), 'src/$1')
-      }
-    ]
+        replacement: path.join(process.cwd(), 'src/$1'),
+      },
+    ],
   },
   server: {
-    // this ensures that the browser opens upon server start
+    // This ensures that the browser opens upon server start
     open: true,
-    // this sets a default port to 3000
-    port: 3000
+    // This sets a default port to 3000
+    port: 3000,
   },
   preview: {
-    // this ensures that the browser opens upon preview start
+    // This ensures that the browser opens upon preview start
     open: true,
-    // this sets a default port to 3000
-    port: 3000
-  }
+    // This sets a default port to 3000
+    port: 3000,
+  },
 });

@@ -65,3 +65,19 @@ NetBots
 GitHub
 
 ./run.sh
+
+cd ~/actions-runner/\_work/yham-admin/yham-admin
+
+server {
+listen 80;
+listen [::]:80;
+
+root /var/www/html/;
+index index.html index.htm index.nginx-debian.html;
+server_name ec2-35-153-210-209.compute-1.amazonaws.com; 
+location / {
+try_files $uri $uri/ =404;
+
+}
+
+}

@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import { Box, Card, CardContent, TextField, Button, Typography, Link, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import VersionDisplay from "./VersionDisplay"
+import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
+import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+import VersionDisplay from "./VersionDisplay";
+import BASE_URL from '../baseUrl';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,15 +17,18 @@ const Login = () => {
   const handleLogin = async () => {
     setLoading(true); // Start loading
     try {
-      const response = await axios.post('http://localhost:5000/api/user/login', { email, password }, { withCredentials: true });
-      
+      const response = await axios.post(`${BASE_URL}/api/user/login`, { email, password }, { withCredentials: true });
+      console.log('Login response:', response.data);
       // Store user details in localStorage
       localStorage.setItem('user', JSON.stringify(response.data));
 
-      navigate('/dashboard'); 
+      toast.success('Login successful! Redirecting to dashboard...');
+    
+        navigate('/dashboard');
     } catch (error) {
       console.error('Error logging in:', error.response?.data?.message || error.message);
-      alert('Invalid email or password. Please try again.');
+      // Show error notification
+      toast.error('Invalid email or password. Please try again.');
     } finally {
       setLoading(false); // End loading
     }
@@ -32,7 +39,7 @@ const Login = () => {
       <Card sx={{ width: { xs: '100%', sm: '400px' } }}>
         <CardContent>
           <Typography variant="h5" gutterBottom>
-            Login
+            Login to YHAM Dashboard
           </Typography>
 
           <Box component="form" noValidate autoComplete="off" mt={2} display="flex" flexDirection="column" gap={2}>
@@ -73,7 +80,8 @@ const Login = () => {
           </Box>
         </CardContent>
       </Card>
-      <VersionDisplay/>
+      <VersionDisplay />
+      <ToastContainer /> {/* Add ToastContainer here */}
     </Box>
   );
 };

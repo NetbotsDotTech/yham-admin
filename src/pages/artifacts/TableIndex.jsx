@@ -10,6 +10,7 @@ import AddArtifact from './AddArtifact/AddArtifact';
 import EditArtifact from './Edit/EditArtifact';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BASE_URL from 'pages/baseUrl';
 
 const Example = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -24,7 +25,7 @@ const Example = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/artifacts', {
+      const response = await axios.get(`${BASE_URL}/api/artifacts`, {
         withCredentials: true,  
       });
       setData(response.data.data); // Extract the actual data array
@@ -54,7 +55,7 @@ const Example = () => {
     console.log("currentRow._id",currentRow._id)
     if (currentRow && currentRow._id) {  // Access the _id field directly
       try {
-        await axios.delete(`http://localhost:5000/api/artifacts/${currentRow._id}`, {
+        await axios.delete(`${BASE_URL}/api/artifacts/${currentRow._id}`, {
           withCredentials: true,  
         });
         fetchData(); 
@@ -162,7 +163,7 @@ const Example = () => {
 
   const handleSaveEdit = async (updatedArtifact) => {
     try {
-      await axios.put(`http://localhost:5000/api/artifacts/${updatedArtifact._id}`, updatedArtifact);  // Use _id for update
+      await axios.put(`${BASE_URL}/api/artifacts/${updatedArtifact._id}`, updatedArtifact);  // Use _id for update
       fetchData(); 
       handleCloseEditModal();
     } catch (error) {

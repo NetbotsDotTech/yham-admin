@@ -10,15 +10,17 @@ import {
   DialogContent,
   DialogTitle,
   DialogActions,
-  LinearProgress
+  LinearProgress,
+  ToggleButtonGroup,
+  ToggleButton
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
-import { useDropzone } from 'react-dropzone';
-import VoiceRecording from './VoiceRecording';
-import axios from 'axios';
+import { Close as CloseIcon, PhotoCamera, Upload as UploadIcon } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import axios from 'axios';
+import ImageUpload from './ImageUpload';
+import VoiceRecording from './VoiceRecording';
+import BASE_URL from "../../baseUrl"
 export default function AddArtifact({ open, handleClose }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -29,6 +31,9 @@ export default function AddArtifact({ open, handleClose }) {
     age: '',
     shelfNo: '',
     hallNo: '',
+    purchasePrice: '',
+    salePrice: '',
+    source: '',
     particulars: {
       width: '',
       depth: '',
@@ -52,6 +57,9 @@ export default function AddArtifact({ open, handleClose }) {
     tempErrors.madeOf = formData.madeOf ? '' : 'Material (Made Of) is required.';
     tempErrors.shelfNo = formData.shelfNo ? '' : 'Shelf No is required.';
     tempErrors.hallNo = formData.hallNo ? '' : 'Hall No is required.';
+    tempErrors.purchasePrice = formData.purchasePrice ? '' : 'Purchase Price is required.';
+    tempErrors.salePrice = formData.salePrice ? '' : 'Sale Price is required.';
+    tempErrors.source = formData.source ? '' : 'Source is required.';
     tempErrors.images = formData.images.length > 0 ? '' : 'At least one image is required.';
 
     // Validate particulars fields if provided
@@ -84,11 +92,19 @@ export default function AddArtifact({ open, handleClose }) {
     }));
   };
 
-  const handleImageUpload = (acceptedFiles) => {
+  const handleImageUpload = (uploadedImages) => {
     setFormData((prevData) => ({
       ...prevData,
-      images: acceptedFiles
+      images: uploadedImages
     }));
+  };
+
+  const handleImageRemove = (index) => {
+    setFormData((prevData) => {
+      const updatedImages = [...prevData.images];
+      updatedImages.splice(index, 1);
+      return { ...prevData, images: updatedImages };
+    });
   };
 
   const handleAudioStop = (blob) => {
@@ -105,8 +121,20 @@ export default function AddArtifact({ open, handleClose }) {
     }));
   };
 
+  const handleAudioUpload = (uploadedAudio) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      audio: uploadedAudio
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!validate()) {
+      toast.error('Please fix the errors in the form.',{
+        onClose: () => {
+          toast.dismiss();
+        },
+      });
       return;
     }
 
@@ -119,35 +147,70 @@ export default function AddArtifact({ open, handleClose }) {
         });
       } else if (key === 'images') {
         formData.images.forEach((image) => {
-          formDataToSend.append('images', image);
+          let imageName = image.name || `image-${Date.now()}.png`;
+          if (!imageName.includes('.')) {
+            imageName += '.png'; // Default to png if no extension found
+          }
+          formDataToSend.append('images', image, imageName);
         });
       } else if (key === 'audio' && formData.audio) {
-        formDataToSend.append('audio', formData.audio, `recording-${Date.now()}.wav`);
+        let audioName = formData.audio.name || `recording-${Date.now()}.aac`;
+        if (!audioName.includes('.')) {
+          audioName += '.aac'; // Default to AAC if no extension found
+        }
+        formDataToSend.append('audio', formData.audio, audioName);
       } else {
         formDataToSend.append(key, formData[key]);
       }
     });
 
     try {
-      await axios.post('http://localhost:5000/api/artifacts', formDataToSend, {
+      console.log("formDataToSend", formDataToSend)
+      await axios.post(`${BASE_URL}/api/artifacts`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      toast.success('Artifact added successfully!');
+      toast.success('Artifact added successfully!',{
+        onClose: () => {
+          toast.dismiss();
+        },
+      });
       handleClose();
+      // Reset form after successful submission
+      setFormData({
+        name: '',
+        itemNo: '',
+        serialNo: '',
+        description: '',
+        madeOf: '',
+        age: '',
+        shelfNo: '',
+        hallNo: '',
+        purchasePrice: '',
+        salePrice: '',
+        source: '',
+        particulars: {
+          width: '',
+          depth: '',
+          circumference: '',
+          diameters: '',
+          weight: ''
+        },
+        images: [],
+        audio: null
+      });
+      setErrors({});
     } catch (error) {
-      toast.error('Failed to add artifact. Please try again.');
+      toast.error('Failed to add artifact. Please try again.',{
+        onClose: () => {
+          toast.dismiss();
+        },
+      });
     } finally {
       setLoading(false);
     }
   };
-
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: 'image/*',
-    multiple: true,
-    onDrop: handleImageUpload
-  });
 
   return (
     <>
@@ -168,7 +231,13 @@ export default function AddArtifact({ open, handleClose }) {
       >
         <DialogTitle>
           <Typography variant="h6">Add New Artifact</Typography>
-          <IconButton edge="end" color="inherit" onClick={handleClose} aria-label="close" sx={{ position: 'absolute', right: 8, top: 8 }}>
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={handleClose}
+            aria-label="close"
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -282,6 +351,51 @@ export default function AddArtifact({ open, handleClose }) {
               />
             </Grid>
 
+            {/* Fourth Row - New Fields */}
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="Purchase Price"
+                name="purchasePrice"
+                type="number"
+                value={formData.purchasePrice}
+                onChange={handleInputChange}
+                margin="normal"
+                variant="outlined"
+                error={!!errors.purchasePrice}
+                helperText={errors.purchasePrice}
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="Sale Price"
+                name="salePrice"
+                type="number"
+                value={formData.salePrice}
+                onChange={handleInputChange}
+                margin="normal"
+                variant="outlined"
+                error={!!errors.salePrice}
+                helperText={errors.salePrice}
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                label="Source"
+                name="source"
+                value={formData.source}
+                onChange={handleInputChange}
+                margin="normal"
+                variant="outlined"
+                error={!!errors.source}
+                helperText={errors.source}
+              />
+            </Grid>
+
             {/* Particulars Row */}
             <Grid item xs={12}>
               <Typography variant="h6" sx={{ mb: 2 }}>
@@ -299,6 +413,8 @@ export default function AddArtifact({ open, handleClose }) {
                     variant="outlined"
                     error={!!errors.particulars?.width}
                     helperText={errors.particulars?.width}
+                    type="number"
+                    inputProps={{ min: 0 }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -312,6 +428,8 @@ export default function AddArtifact({ open, handleClose }) {
                     variant="outlined"
                     error={!!errors.particulars?.depth}
                     helperText={errors.particulars?.depth}
+                    type="number"
+                    inputProps={{ min: 0 }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -325,6 +443,8 @@ export default function AddArtifact({ open, handleClose }) {
                     variant="outlined"
                     error={!!errors.particulars?.circumference}
                     helperText={errors.particulars?.circumference}
+                    type="number"
+                    inputProps={{ min: 0 }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -338,6 +458,8 @@ export default function AddArtifact({ open, handleClose }) {
                     variant="outlined"
                     error={!!errors.particulars?.diameters}
                     helperText={errors.particulars?.diameters}
+                    type="number"
+                    inputProps={{ min: 0 }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -351,43 +473,23 @@ export default function AddArtifact({ open, handleClose }) {
                     variant="outlined"
                     error={!!errors.particulars?.weight}
                     helperText={errors.particulars?.weight}
+                    type="number"
+                    inputProps={{ min: 0 }}
                   />
                 </Grid>
               </Grid>
             </Grid>
 
             {/* Image Upload Section */}
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Upload Images
-              </Typography>
-              <div
-                {...getRootProps({ className: 'dropzone' })}
-                style={{ padding: '10px', border: '2px dashed #ccc', borderRadius: '8px', textAlign: 'center', marginBottom: '20px' }}
-              >
-                <input {...getInputProps()} />
-                <Typography variant="body1">Drag & drop some images here, or click to select images</Typography>
-              </div>
-              <Grid container spacing={2}>
-                {formData.images.map((file, index) => (
-                  <Grid item xs={12} sm={4} key={index}>
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`uploaded-img-${index}`}
-                      style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px' }}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </Grid>
+            <ImageUpload images={formData.images} onImageUpload={handleImageUpload} onImageRemove={handleImageRemove} />
 
             {/* Audio Recording Section */}
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Record Audio
-              </Typography>
-              <VoiceRecording audio={formData.audio} onAudioStop={handleAudioStop} onAudioSave={handleAudioSave} />
-            </Grid>
+            <VoiceRecording
+              audio={formData.audio}
+              onAudioStop={handleAudioStop}
+              onAudioSave={handleAudioSave}
+              onAudioUpload={handleAudioUpload}
+            />
           </Grid>
         </DialogContent>
         {loading && <LinearProgress />} {/* Show Progress Bar when loading */}

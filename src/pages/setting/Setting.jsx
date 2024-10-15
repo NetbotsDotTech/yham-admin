@@ -1,5 +1,13 @@
-import React from 'react';
+/* eslint-disable prettier/prettier */
+import React from 'react'
+import BackupImportPage from '../backup/backuImport'
+
 
 export default function Setting() {
-  return <div>Setting</div>;
+  return (
+    <>
+    <BackupImportPage/>
+    
+    </>
+  )
 }

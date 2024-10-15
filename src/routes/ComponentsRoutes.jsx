@@ -16,6 +16,8 @@ const Login = Loadable(lazy(() => import('pages/auth/login')));
 const EnterEmail = Loadable(lazy(() => import('pages/auth/enterEmail')));
 const VerifyOtp = Loadable(lazy(() => import('pages/auth/otpConfirmation')));
 const UpdatePassword = Loadable(lazy(() => import('pages/auth/updatePassword')));
+const Gallery = Loadable(lazy(() => import('pages/gallery/index')));
+const Library = Loadable(lazy(() => import('pages/library/index')));
 
 // ==============================|| COMPONENTS ROUTES ||============================== //
 
@@ -30,6 +32,8 @@ const ComponentsRoutes = [
       { path: 'users', element: <Users /> },
       { path: 'qr-codes', element: <QrCodes /> },
       { path: 'time-tables', element: <TimeTables /> },
+      { path: 'library', element: <Library /> },
+      { path: 'gallery', element: <Gallery /> },
       { path: 'settings', element: <Settings /> }
     ]
   },

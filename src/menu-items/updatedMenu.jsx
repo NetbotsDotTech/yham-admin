@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 // type
-import { Home3, HomeTrendUp, Box, Archive, User,ScanBarcode, Timer1, Setting2 } from 'iconsax-react';
+import { Home3, HomeTrendUp, Box, Archive, User,ScanBarcode, Timer1, Setting2, Gallery, ArchiveBook } from 'iconsax-react';
 
 // icons
 const icons = {
@@ -11,6 +11,8 @@ const icons = {
   users: User,
   settings: Setting2,
   timetable: Timer1,
+  library:ArchiveBook, 
+  gallery:Gallery,
   ScanBarcode: ScanBarcode
 };
 
@@ -39,8 +41,8 @@ const UpdatedMenu = {
       breadcrumbs: false
     },
     {
-      id: 'stock-registering',
-      title: 'Stock Registering',
+      id: 'stock',
+      title: 'Stocks',
       type: 'item',
       url: '/stock-registering',
       icon: icons.stockRegistering,
@@ -54,6 +56,24 @@ const UpdatedMenu = {
     //   icon: icons.users,
     //   breadcrumbs: false
     // },
+ 
+  
+    {
+      id: 'library',
+      title: 'Library',
+      type: 'item',
+      url: '/library',
+      icon: icons.library,
+      breadcrumbs: false
+    },
+    {
+      id: 'gallery',
+      title: 'Gallery',
+      type: 'item',
+      url: '/gallery',
+      icon: icons.gallery,
+      breadcrumbs: false
+    },
     {
       id: 'qr-codes',
       title: 'Qr Codes',
@@ -62,7 +82,7 @@ const UpdatedMenu = {
       icon: icons.ScanBarcode,
       breadcrumbs: false
     },
-      {
+    {
       id: 'timetable',
       title: 'Timimgs',
       type: 'item',
